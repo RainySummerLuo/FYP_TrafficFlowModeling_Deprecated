@@ -1,4 +1,4 @@
-public class Monitoring {
+class Monitoring {
     static int location = 20;
     static String icon = ":";
     static int timePeriod = 5;
