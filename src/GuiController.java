@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import java.net.URL;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -74,32 +73,14 @@ public class GuiController implements Initializable {
     }
 
     private void refresh() {
-        int distance;
-        int speed;
         TreeMap<Integer, Car> carsLocMap = new TreeMap<>((o1, o2) -> o2 - o1);
         for (Car car : Gui.cars) {
             carsLocMap.put(car.getLocation(), car);
         }
 
         carJudgement(carsLocMap);
+        carMovement(carsLocMap);
 
-        TreeMap<Integer, Car> carsLocMapRev = new TreeMap<>(Comparator.comparingInt(o -> o));
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
-            carsLocMapRev.put(entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<Integer, Car> entry : carsLocMapRev.entrySet()) {
-            /* Car's Status */
-            Car car = entry.getValue();
-
-            /* Car's Advancement */
-            distance = car.getDistance();
-            speed = car.getSpeed();
-            int distance_new = distance + (speed * Gui.periodSecond);
-            car.setDistance(distance_new);
-            car.setLocation(distance_new % Gui.roadLength);
-            car.setRound(distance_new / Gui.roadLength);
-            car.setTime(car.getTime() + 1);
-        }
         guiRoadText(carsLocMap);
         guiInfoText();
     }
@@ -227,5 +208,19 @@ public class GuiController implements Initializable {
         strInfo.append(" | Time: ").append(time);
 
         infoLabel.setText(String.valueOf(strInfo));
+    }
+
+    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            Car car = entry.getValue();
+            /* Car's Advancement */
+            int distance = car.getDistance();
+            int speed = car.getSpeed();
+            int distance_new = distance + (speed * Gui.periodSecond);
+            car.setDistance(distance_new);
+            car.setLocation(distance_new % Gui.roadLength);
+            car.setRound(distance_new / Gui.roadLength);
+            car.setTime(car.getTime() + 1);
+        }
     }
 }
