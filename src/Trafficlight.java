@@ -4,4 +4,6 @@ class Trafficlight {
     static int greenlightPeriod = 10;
     static int redlight = 5;
     static int greenlight = 0;
+    static String greenlightIcon = "»";
+    static String redlightIcon = "¤";
 }

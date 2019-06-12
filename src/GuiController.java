@@ -71,6 +71,8 @@ public class GuiController implements Initializable {
         carJudgement(carsLocMap);
         carMovement(carsLocMap);
 
+        Monitoring(carsLocMap);
+
         guiRoadText(carsLocMap);
         guiInfoText();
     }
@@ -129,19 +131,27 @@ public class GuiController implements Initializable {
         StringBuilder strRoad = new StringBuilder();
         for (int i = 0; i < 5; i++) {
             strRoad.append("*");
+
             for (int j = 1; j < Gui.roadLength + 1; j++) {
-                if (j == Roadblock.location) {
-                    strRoad.append("|");
-                } else if (j == Trafficlight.location) {
-                    if (Trafficlight.redlight > 0) {
-                        strRoad.append("¤");
-                    } else if (Trafficlight.greenlight > 0) {
-                        strRoad.append("»");
+                if (i < 4) {
+                    if (j == Roadblock.location) {
+                        strRoad.append(Roadblock.icon);
+                    } else if (j == Trafficlight.location) {
+                        if (Trafficlight.redlight > 0) {
+                            strRoad.append(Trafficlight.redlightIcon);
+                        } else if (Trafficlight.greenlight > 0) {
+                            strRoad.append(Trafficlight.greenlightIcon);
+                        }
+                    } else if (j == Monitoring.location) {
+                        strRoad.append(Monitoring.icon);
+                    } else {
+                        strRoad.append(" ");
                     }
                 } else {
                     strRoad.append(" ");
                 }
             }
+
             strRoad.append("*").append("\n");
         }
         facilityLabel.setText(String.valueOf(strRoad));
@@ -161,12 +171,23 @@ public class GuiController implements Initializable {
 
     private void guiInfoText() {
         StringBuilder strInfo = new StringBuilder();
+
+        int time = Gui.cars.get(0).getTime();
+        strInfo.append("Time: ").append(time);
+
+        int carNum = Monitoring.carNum;
+        strInfo.append(" | Car: ").append(carNum);
+        int density = (carNum / Gui.periodSecond * 3600) / time;
+        strInfo.append(" Flow: ").append(density).append("veh/h");
+
         String roadblock;
         if (Roadblock.location > 0) {
-            roadblock = "Roadblock " + Roadblock.location + " | ";
+            roadblock = " | Roadblock " + Roadblock.location + " | ";
         } else {
-            roadblock = "No Roadblock | ";
+            roadblock = " | No Roadblock | ";
         }
+        strInfo.append(roadblock);
+
         String trafficlight = "";
         if (Trafficlight.redlight > 0) {
             trafficlight = "Red Light " + Trafficlight.redlight + "  ";
@@ -181,13 +202,7 @@ public class GuiController implements Initializable {
                 Trafficlight.redlight = Trafficlight.redlightPeriod;
             }
         }
-
-        strInfo.append(roadblock);
         strInfo.append(trafficlight);
-
-        int time = Gui.cars.get(0).getTime();
-        strInfo.append(" | Time: ").append(time);
-
         infoLabel.setText(String.valueOf(strInfo));
     }
 
@@ -203,6 +218,15 @@ public class GuiController implements Initializable {
             car.setLocation(distance_new % Gui.roadLength);
             car.setRound(distance_new / Gui.roadLength);
             car.setTime(car.getTime() + 1);
+        }
+    }
+
+    private void Monitoring(TreeMap<Integer, Car> carsLocMap) {
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            Car car = entry.getValue();
+            if (car.getLocation() + car.getSpeed() == Monitoring.location) {
+                Monitoring.carNum += 1;
+            }
         }
     }
 }
