@@ -4,16 +4,14 @@ public class Car {
     private int speed;
     private int acceleration;
     private int time;
-    private int slowPeriod;//The time of every slow down
+    private boolean isSlow;
     private int round;
     private String icon;
 
     Car(int speed, String icon) {
-        // this.maxSpeed = speed;
         this.speed = speed;
-        slowPeriod = 0;
-        distance = 0;
-        acceleration = 0;
+        isSlow = false;
+        acceleration = 1;
         time = 0;
         round = 0;
         this.icon = icon;
@@ -68,19 +66,19 @@ public class Car {
         distance = location;
     }
 
-    public int getRound() {
-        return round;
-    }
-
     void setRound(int round) {
         this.round = round;
     }
 
-    int getSlowPeriod() {
-        return slowPeriod;
+    boolean getSlow() {
+        return isSlow;
     }
 
-    void setSlowPeriod(int slowPeriod) {
-        this.slowPeriod = slowPeriod;
+    void setSlow(boolean slow) {
+        this.isSlow = slow;
+    }
+
+    public int getRound() {
+        return round;
     }
 }

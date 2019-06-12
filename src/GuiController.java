@@ -59,17 +59,7 @@ public class GuiController implements Initializable {
     }
 
     public void slowDown() {
-        int maxLoc = 0;
-        Car maxCar = null;
-        for (Car car : Gui.cars) {
-            if (car.getLocation() > maxLoc) {
-                maxLoc = car.getLocation();
-                maxCar = car;
-            }
-        }
-        assert maxCar != null;
-        maxCar.setSpeed(maxCar.getSpeed() / 2);
-        maxCar.setSlowPeriod(5);
+
     }
 
     private void refresh() {
@@ -88,49 +78,39 @@ public class GuiController implements Initializable {
     private void carJudgement(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             int currDistance = entry.getKey();
-            Car carElement = entry.getValue();
-            //Controlling of the time period of decreasing the speed
-            if (carElement.getSlowPeriod() == 0) {
-                carElement.setSpeed(Road.maxSpeed);
+            Car car = entry.getValue();
+
+            int safeDistance;
+            if (car.getSpeed() > Road.carDistance) {
+                safeDistance = car.getSpeed();
             } else {
-                carElement.setSlowPeriod(carElement.getSlowPeriod() - 1);
+                safeDistance = Road.carDistance;
             }
-            int carDistanceEnd = Gui.roadLength - currDistance - carElement.getSpeed();
-            if (carDistanceEnd <= Gui.carDistance) {
-                int carPeriod = Gui.carDistance - carDistanceEnd;
-                for (int i = 1; i <= carDistanceEnd; i++) {
-                    if (carsLocMap.containsKey(currDistance + i)) {
-                        carElement.setSpeed(0);
+
+            int carTillEnd = Gui.roadLength - currDistance;
+            if (carTillEnd < safeDistance) {
+                for (int i = 1; i <= carTillEnd; i++) {
+                    if (carsLocMap.containsKey(currDistance + i) || (i == Roadblock.location || i == Trafficlight.location)) {
+                        car.setSlow(true);
+                        car.setSpeed(0);
                     }
                 }
-                for (int i = 1; i <= carPeriod; i++) {
-                    if (carsLocMap.containsKey(i)) {
-                        carElement.setSpeed(0);
+                for (int i = 1; i <= safeDistance - carTillEnd; i++) {
+                    if (carsLocMap.containsKey(i) || (i == Roadblock.location || i == Trafficlight.location)) {
+                        car.setSlow(true);
+                        car.setSpeed(0);
                     }
                 }
             } else {
-                for (int i = 1; i <= Gui.carDistance + carElement.getSpeed(); i++) {
-                    if (carsLocMap.containsKey(currDistance + i)) {
-                        carElement.setSpeed(0);
+                for (int i = 1; i <= safeDistance; i++) {
+                    if (carsLocMap.containsKey(currDistance + i) || (i == Roadblock.location || i == Trafficlight.location)) {
+                        car.setSpeed(0);
                     }
                 }
             }
 
-            if (Roadblock.location > 0) {
-                if (currDistance + carElement.getSpeed() == Roadblock.location) {
-                    carElement.setSpeed(currDistance);
-                }
-                if (currDistance == Roadblock.location - 1) {
-                    carElement.setSpeed(0);
-                }
-            }
-            if (currDistance + 1 == Trafficlight.location && Trafficlight.redlight > 0) {
-                if (currDistance + carElement.getSpeed() == Trafficlight.location) {
-                    carElement.setSpeed(currDistance);
-                }
-                if (currDistance == Trafficlight.location - 1) {
-                    carElement.setSpeed(0);
-                }
+            if (car.getSpeed() < Road.maxSpeed && !car.getSlow()) {
+                car.setSpeed(Road.maxSpeed);
             }
         }
     }
@@ -216,7 +196,8 @@ public class GuiController implements Initializable {
             /* Car's Advancement */
             int distance = car.getDistance();
             int speed = car.getSpeed();
-            int distance_new = distance + (speed * Gui.periodSecond);
+            int time = Gui.periodSecond;
+            int distance_new = distance + speed * time;
             car.setDistance(distance_new);
             car.setLocation(distance_new % Gui.roadLength);
             car.setRound(distance_new / Gui.roadLength);

@@ -10,7 +10,6 @@ public class Gui extends Application {
     static int periodSecond = 1;
     static int periodThread = 200;
     static int roadLength = 80;
-    static int carDistance = 1;
     static ArrayList<Car> cars = new ArrayList<>();
 
     public static void main(String[] args) {
