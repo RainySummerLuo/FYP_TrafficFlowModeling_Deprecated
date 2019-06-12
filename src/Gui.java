@@ -13,32 +13,28 @@ public class Gui extends Application {
     static int carDistance = 1;
     static ArrayList<Car> cars = new ArrayList<>();
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Gui.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
-    }
-
     public static void main(String[] args) {
         int carSpeed = 1;
         int carNum = 4;
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car(carSpeed + 1, "Santana", "▷");
-            if (i % 4 == 0) {
-                car.setIcon("→");
-            }
-            else if (i % 4 == 1){
-                car.setIcon("♥");
-            }
-            else if (i % 4 == 2){
-                car.setIcon("♦");
+            Car car = new Car(carSpeed + 1, "▷");
+            if (i % 2 == 0) {
+                car.setIcon("●");
+            } else if (i % 2 == 1) {
+                car.setIcon("○");
             }
             car.setLocation(i);
             cars.add(car);
         }
 
         launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("Gui.fxml"));
+        primaryStage.setTitle("Hello World");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
     }
 }

@@ -5,7 +5,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 public class GuiController implements Initializable {
     @FXML
@@ -36,7 +39,7 @@ public class GuiController implements Initializable {
             Runnable updater = this::refresh;
             while (true) {
                 try {
-                    //The period of moving each car depends on the
+                    //The period of moving each car depends on Gui.periodThread
                     Thread.sleep(Gui.periodThread);
                 } catch (InterruptedException ignored) {
                 }
@@ -72,54 +75,36 @@ public class GuiController implements Initializable {
 
     private void refresh() {
         int distance;
-        int time;
         int speed;
-        StringBuilder laneStr = new StringBuilder();
-        //TreeMap<Integer, Car> carsMap = new TreeMap<>((o1, o2) -> o2 - o1);
         TreeMap<Integer, Car> carsLocMap = new TreeMap<>((o1, o2) -> o2 - o1);
-        /*
-        for (Car car : Main.cars) {
-            carsMap.put(car.getDistance(), car);
-        }
-        */
-        laneStr.append("\n");
-        for (int i = 0; i <= Gui.roadLength + 1; i++) {
-            laneStr.append("=");
-        }
-        laneStr.append("\n");
         for (Car car : Gui.cars) {
             carsLocMap.put(car.getLocation(), car);
         }
-        /*
-        int preDistance = 0;
-        Object obj = null;
-        obj = carsMap.firstKey();
-        Car carInCars = carsMap.get(obj);
-        preDistance = carInCars.getLocation();
-        */
-        StringBuilder strInfo = new StringBuilder();
-        String roadblock;
-        if (Roadblock.location > 0) {
-            roadblock = "Roadblock " + Roadblock.location + " | ";
-        } else {
-            roadblock = "No Roadblock | ";
+
+        carJudgement(carsLocMap);
+
+        TreeMap<Integer, Car> carsLocMapRev = new TreeMap<>(Comparator.comparingInt(o -> o));
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            carsLocMapRev.put(entry.getKey(), entry.getValue());
         }
-        String trafficlight = "";
-        if (Trafficlight.redlight > 0) {
-            trafficlight = "Red Light " + Trafficlight.redlight + "  ";
-            Trafficlight.redlight -= 1;
-            if (Trafficlight.redlight == 0) {
-                Trafficlight.greenlight = Trafficlight.greenlightPeriod;
-            }
-        } else if (Trafficlight.greenlight > 0) {
-            trafficlight = "Green Light " + Trafficlight.greenlight;
-            Trafficlight.greenlight -= 1;
-            if (Trafficlight.greenlight == 0) {
-                Trafficlight.redlight = Trafficlight.redlightPeriod;
-            }
+        for (Map.Entry<Integer, Car> entry : carsLocMapRev.entrySet()) {
+            /* Car's Status */
+            Car car = entry.getValue();
+
+            /* Car's Advancement */
+            distance = car.getDistance();
+            speed = car.getSpeed();
+            int distance_new = distance + (speed * Gui.periodSecond);
+            car.setDistance(distance_new);
+            car.setLocation(distance_new % Gui.roadLength);
+            car.setRound(distance_new / Gui.roadLength);
+            car.setTime(car.getTime() + 1);
         }
-        strInfo.append(roadblock);
-        strInfo.append(trafficlight);
+        guiRoadText(carsLocMap);
+        guiInfoText();
+    }
+
+    private void carJudgement(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             int currDistance = entry.getKey();
             Car carElement = entry.getValue();
@@ -167,68 +152,80 @@ public class GuiController implements Initializable {
                 }
             }
         }
+    }
 
-        System.out.println();
-        StringBuilder strLane = new StringBuilder();
+    private void guiRoadText(TreeMap<Integer, Car> carsLocMap) {
+        /* Roadside '==='s */
+        StringBuilder strRoadLane = new StringBuilder();
+        for (int i = 0; i <= Gui.roadLength + 1; i++) {
+            strRoadLane.append("=");
+        }
+        roadLabelUp.setText(String.valueOf(strRoadLane));
+        roadLabelDown.setText(String.valueOf(strRoadLane));
+
+        /* Roadblock and Traffic light */
+        StringBuilder strRoad = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            strRoad.append("*");
+            for (int j = 1; j < Gui.roadLength + 1; j++) {
+                if (j == Roadblock.location) {
+                    strRoad.append("|");
+                } else if (j == Trafficlight.location) {
+                    if (Trafficlight.redlight > 0) {
+                        strRoad.append("¤");
+                    } else if (Trafficlight.greenlight > 0) {
+                        strRoad.append("»");
+                    }
+                } else {
+                    strRoad.append(" ");
+                }
+            }
+            strRoad.append("*").append("\n");
+        }
+        facilityLabel.setText(String.valueOf(strRoad));
+
+        /* Cars on the road */
+        StringBuilder strCar = new StringBuilder();
         for (int i = 1; i <= Gui.roadLength; i++) {
             if (carsLocMap.containsKey(i)) {
                 String icon = carsLocMap.get(i).getIcon();
-                strLane.append(icon);
+                strCar.append(icon);
             } else {
-                strLane.append(" ");
+                strCar.append(" ");
             }
         }
-        laneStr.append(strLane);
-        laneStr.append("\n");
-        time = Gui.cars.get(0).getTime();
-        strInfo.append(" | Time: ").append(time);
-        TreeMap<Integer, Car> carsLocMapRev = new TreeMap<>(Comparator.comparingInt(o -> o));
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
-            carsLocMapRev.put(entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<Integer, Car> entry : carsLocMapRev.entrySet()) {
-            /* Car's Status */
-            Car car = entry.getValue();
+        laneLabel.setText(String.valueOf(strCar));
+    }
 
-            /* Car's Advancement */
-            distance = car.getDistance();
-            speed = car.getSpeed();
-            int distance_new = distance + (speed * Gui.periodSecond);
-            car.setDistance(distance_new);
-            car.setLocation(distance_new % Gui.roadLength);
-            car.setRound(distance_new / Gui.roadLength);
-            car.setTime(car.getTime() + 1);
+    private void guiInfoText() {
+        StringBuilder strInfo = new StringBuilder();
+        String roadblock;
+        if (Roadblock.location > 0) {
+            roadblock = "Roadblock " + Roadblock.location + " | ";
+        } else {
+            roadblock = "No Roadblock | ";
         }
-        laneStr.append(strInfo);
-        laneStr.append("\n");
-        StringBuilder strRoadLane = new StringBuilder();
-        for (int i = 0; i <= Gui.roadLength + 1; i++) {
-            laneStr.append("=");
-            strRoadLane.append("=");
-        }
-        StringBuilder strRoadFacility = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            strRoadFacility.append("*");
-            for (int j = 1; j < Gui.roadLength + 1; j++) {
-                if (j == Roadblock.location) {
-                    strRoadFacility.append("|");
-                } else if (j == Trafficlight.location) {
-                    if (Trafficlight.redlight > 0) {
-                        strRoadFacility.append("✦");
-                    } else if (Trafficlight.greenlight > 0)  {
-                        strRoadFacility.append("✧");
-                    }
-                } else {
-                    strRoadFacility.append(" ");
-                }
+        String trafficlight = "";
+        if (Trafficlight.redlight > 0) {
+            trafficlight = "Red Light " + Trafficlight.redlight + "  ";
+            Trafficlight.redlight -= 1;
+            if (Trafficlight.redlight == 0) {
+                Trafficlight.greenlight = Trafficlight.greenlightPeriod;
             }
-            strRoadFacility.append("*").append("\n");
+        } else if (Trafficlight.greenlight > 0) {
+            trafficlight = "Green Light " + Trafficlight.greenlight;
+            Trafficlight.greenlight -= 1;
+            if (Trafficlight.greenlight == 0) {
+                Trafficlight.redlight = Trafficlight.redlightPeriod;
+            }
         }
-        System.out.print(laneStr);
-        facilityLabel.setText(String.valueOf(strRoadFacility));
-        roadLabelUp.setText(String.valueOf(strRoadLane));
-        roadLabelDown.setText(String.valueOf(strRoadLane));
-        laneLabel.setText(String.valueOf(strLane));
+
+        strInfo.append(roadblock);
+        strInfo.append(trafficlight);
+
+        int time = Gui.cars.get(0).getTime();
+        strInfo.append(" | Time: ").append(time);
+
         infoLabel.setText(String.valueOf(strInfo));
     }
 }
