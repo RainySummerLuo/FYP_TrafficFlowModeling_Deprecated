@@ -79,15 +79,16 @@ public class Car {
         this.isSlow = slow;
     }
 
+    @SuppressWarnings("unused")
     public int getRound() {
         return round;
     }
 
-    public int getSlowDistance() {
+    int getSlowDistance() {
         return slowDistance;
     }
 
-    public void setSlowDistance(int slowDistance) {
+    void setSlowDistance(int slowDistance) {
         this.slowDistance = slowDistance;
     }
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" prefHeight="318.0" prefWidth="651.0" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="GuiController">
+<GridPane alignment="center" hgap="10" prefHeight="318.0" prefWidth="651.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.212" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GuiController">
     <columnConstraints>
         <ColumnConstraints />
     </columnConstraints>
@@ -18,29 +18,29 @@
     <children>
         <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="942.0">
             <children>
-                <Button fx:id="clearBtn" layoutX="236.0" layoutY="239.0" mnemonicParsing="false" onAction="#roadblock" prefHeight="31.0" prefWidth="128.0" text="Roadblock" />
-                <Button fx:id="slowBtn" layoutX="610.0" layoutY="239.0" mnemonicParsing="false" onAction="#slowDown" prefHeight="31.0" prefWidth="80.0" text="Slower" />
-                <Label fx:id="laneLabel" layoutX="30.0" layoutY="95.0" prefHeight="23.0" prefWidth="903.0" text="✈">
+                <Button fx:id="clearBtn" layoutX="237.0" layoutY="239.0" mnemonicParsing="false" onAction="#roadblock" prefHeight="31.0" prefWidth="128.0" text="Roadblock" />
+                <Button fx:id="slowBtn" layoutX="611.0" layoutY="239.0" mnemonicParsing="false" onAction="#slowDown" prefHeight="31.0" prefWidth="80.0" text="Slower" />
+                <Label fx:id="laneLabel" layoutX="31.0" layoutY="95.0" prefHeight="23.0" prefWidth="903.0" text="✈">
                     <font>
                         <Font name="Consolas Bold" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="roadLabelUp" layoutX="19.0" layoutY="14.0" prefHeight="23.0" prefWidth="927.0" text=" ====================================================================================">
+                <Label fx:id="roadLabelUp" layoutX="20.0" layoutY="14.0" prefHeight="23.0" prefWidth="927.0" text=" ====================================================================================">
                     <font>
                         <Font name="Consolas" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="roadLabelDown" layoutX="19.0" layoutY="176.0" prefHeight="23.0" prefWidth="927.0" text=" ====================================================================================">
+                <Label fx:id="roadLabelDown" layoutX="20.0" layoutY="176.0" prefHeight="23.0" prefWidth="927.0" text=" ====================================================================================">
                     <font>
                         <Font name="Consolas" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="infoLabel" layoutX="42.0" layoutY="150.0" prefHeight="22.0" prefWidth="793.0" text=" ">
+                <Label fx:id="infoLabel" layoutX="43.0" layoutY="150.0" prefHeight="22.0" prefWidth="793.0" text=" ">
                     <font>
                         <Font name="Consolas" size="18.0" />
                     </font>
                 </Label>
-                <Label fx:id="facilityLabel" layoutX="19.0" layoutY="33.0" prefHeight="151.0" prefWidth="927.0">
+                <Label fx:id="facilityLabel" layoutX="20.0" layoutY="33.0" prefHeight="151.0" prefWidth="927.0">
                     <font>
                         <Font name="Consolas" size="20.0" />
                     </font>

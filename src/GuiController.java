@@ -83,7 +83,6 @@ public class GuiController implements Initializable {
             Car car = entry.getValue();
 
             int safeDistance = car.getSpeed() > Road.carDistance ? car.getSpeed() : Road.carDistance;
-            int miniDistance = Road.carDistance;
 
             car.setSlow(false);
 
@@ -92,26 +91,26 @@ public class GuiController implements Initializable {
                 for (int i = 1; i <= carTillEnd; i++) {
                     if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
                         car.setSlow(true);
-                        car.setSlowDistance(i - miniDistance);
+                        // car.setSlowDistance(i - miniDistance);
                     }
                 }
                 for (int i = 1; i <= safeDistance - carTillEnd; i++) {
                     if (carsLocMap.containsKey(i) || (i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
                         car.setSlow(true);
-                        car.setSlowDistance(carTillEnd + i - miniDistance);
+                        // car.setSlowDistance(carTillEnd + i - miniDistance);
                     }
                 }
             } else {
                 for (int i = 1; i <= safeDistance; i++) {
                     if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
                         car.setSlow(true);
-                        car.setSlowDistance(i - miniDistance);
+                        // car.setSlowDistance((i - miniDistance) > 0 ? (i - miniDistance) : (i - 1));
                     }
                 }
             }
 
             if (car.getSlow()) {
-                car.setSpeed(car.getSlowDistance());
+                car.setSpeed(0);
             } else {
                 car.setSpeed(Road.maxSpeed);
             }
