@@ -80,36 +80,37 @@ public class GuiController implements Initializable {
             int currDistance = entry.getKey();
             Car car = entry.getValue();
 
-            int safeDistance;
-            if (car.getSpeed() > Road.carDistance) {
-                safeDistance = car.getSpeed();
-            } else {
-                safeDistance = Road.carDistance;
-            }
+            int safeDistance = car.getSpeed() > Road.carDistance ? car.getSpeed() : Road.carDistance;
+            int miniDistance = Road.carDistance;
+
+            car.setSlow(false);
 
             int carTillEnd = Gui.roadLength - currDistance;
             if (carTillEnd < safeDistance) {
                 for (int i = 1; i <= carTillEnd; i++) {
-                    if (carsLocMap.containsKey(currDistance + i) || (i == Roadblock.location || i == Trafficlight.location)) {
+                    if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
                         car.setSlow(true);
-                        car.setSpeed(0);
+                        car.setSlowDistance(i - miniDistance);
                     }
                 }
                 for (int i = 1; i <= safeDistance - carTillEnd; i++) {
-                    if (carsLocMap.containsKey(i) || (i == Roadblock.location || i == Trafficlight.location)) {
+                    if (carsLocMap.containsKey(i) || (i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
                         car.setSlow(true);
-                        car.setSpeed(0);
+                        car.setSlowDistance(carTillEnd + i - miniDistance);
                     }
                 }
             } else {
                 for (int i = 1; i <= safeDistance; i++) {
-                    if (carsLocMap.containsKey(currDistance + i) || (i == Roadblock.location || i == Trafficlight.location)) {
-                        car.setSpeed(0);
+                    if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
+                        car.setSlow(true);
+                        car.setSlowDistance(i - miniDistance);
                     }
                 }
             }
 
-            if (car.getSpeed() < Road.maxSpeed && !car.getSlow()) {
+            if (car.getSlow()) {
+                car.setSpeed(car.getSlowDistance());
+            } else {
                 car.setSpeed(Road.maxSpeed);
             }
         }

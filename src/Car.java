@@ -1,5 +1,6 @@
 public class Car {
     private int distance;
+    private int slowDistance;
     private int location;
     private int speed;
     private int acceleration;
@@ -80,5 +81,13 @@ public class Car {
 
     public int getRound() {
         return round;
+    }
+
+    public int getSlowDistance() {
+        return slowDistance;
+    }
+
+    public void setSlowDistance(int slowDistance) {
+        this.slowDistance = slowDistance;
     }
 }
