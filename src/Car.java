@@ -22,7 +22,7 @@ public class Car {
     }
 
     void setDistance(int distance) {
-        this.distance = distance;
+        this.distance += distance;
     }
 
     int getSpeed() {
@@ -48,7 +48,7 @@ public class Car {
     }
 
     void setTime(int time) {
-        this.time = time;
+        this.time += time;
     }
 
     String getIcon() {

@@ -11,6 +11,7 @@ public class Gui extends Application {
     static int periodThread = 200;
     static int roadLength = 80;
     static ArrayList<Car> cars = new ArrayList<>();
+    static ArrayList<RoadFacility> roadFacilities = new ArrayList<>();
 
     public static void main(String[] args) {
         int carSpeed = 1;
@@ -26,6 +27,14 @@ public class Gui extends Application {
             cars.add(car);
         }
 
+        Roadblock roadblock = new Roadblock(75, "|", true);
+        roadFacilities.add(roadblock);
+        Trafficlight trafficlight = new Trafficlight(50, 10, 10, "¤", "»");
+        roadFacilities.add(trafficlight);
+        Monitor monitoring = new Monitor(20, ":");
+        roadFacilities.add(monitoring);
+        Crosswalk crosswalk = new Crosswalk(30, "≣");
+        roadFacilities.add(crosswalk);
         launch(args);
     }
 
