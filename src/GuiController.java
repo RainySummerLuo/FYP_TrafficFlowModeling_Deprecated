@@ -71,7 +71,7 @@ public class GuiController implements Initializable {
         carJudgement(carsLocMap);
         carMovement(carsLocMap);
 
-        Monitoring(carsLocMap);
+        Monitor(carsLocMap);
 
         guiRoadText(carsLocMap);
         guiInfoText();
@@ -83,34 +83,52 @@ public class GuiController implements Initializable {
             Car car = entry.getValue();
 
             int safeDistance = car.getSpeed() > Road.carDistance ? car.getSpeed() : Road.carDistance;
+            int miniDistance = Road.carDistance;
 
             car.setSlow(false);
 
             int carTillEnd = Gui.roadLength - currDistance;
             if (carTillEnd < safeDistance) {
                 for (int i = 1; i <= carTillEnd; i++) {
-                    if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
+                    if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
-                        // car.setSlowDistance(i - miniDistance);
+//                        car.setSlowDistance(i - miniDistance);
+                    }
+                    else if (currDistance + i == Roadblock.location){
+                        car.setSlow(true);
+                    }
+                    else if(currDistance + i == Trafficlight.location && Trafficlight.redlight > 0){
+                        car.setSlow(true);
                     }
                 }
                 for (int i = 1; i <= safeDistance - carTillEnd; i++) {
-                    if (carsLocMap.containsKey(i) || (i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
+                    if (carsLocMap.containsKey(i)) {
                         car.setSlow(true);
-                        // car.setSlowDistance(carTillEnd + i - miniDistance);
+//                        car.setSlowDistance(i - miniDistance);
+                    }
+                    else if (i == Roadblock.location){
+                        car.setSlow(true);
+                    }
+                    else if(i == Trafficlight.location && Trafficlight.redlight > 0){
+                        car.setSlow(true);
                     }
                 }
             } else {
                 for (int i = 1; i <= safeDistance; i++) {
-                    if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
+                    if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
-                        // car.setSlowDistance((i - miniDistance) > 0 ? (i - miniDistance) : (i - 1));
+//                        car.setSlowDistance(i - miniDistance);
+                    }
+                    else if (currDistance + i == Roadblock.location){
+                        car.setSlow(true);
+                    }
+                    else if(currDistance + i == Trafficlight.location && Trafficlight.redlight > 0){
+                        car.setSlow(true);
                     }
                 }
             }
-
             if (car.getSlow()) {
-                car.setSpeed(0);
+                car.setSpeed(car.getSlowDistance());
             } else {
                 car.setSpeed(Road.maxSpeed);
             }
@@ -129,7 +147,6 @@ public class GuiController implements Initializable {
         /* Roadblock and Traffic light */
         StringBuilder strRoad = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            strRoad.append("*");
 
             for (int j = 1; j < Gui.roadLength + 1; j++) {
                 if (i < 4) {
@@ -151,7 +168,7 @@ public class GuiController implements Initializable {
                 }
             }
 
-            strRoad.append("*").append("\n");
+            strRoad.append("\n");
         }
         facilityLabel.setText(String.valueOf(strRoad));
 
@@ -220,7 +237,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void Monitoring(TreeMap<Integer, Car> carsLocMap) {
+    private void Monitor(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
             if (car.getLocation() + car.getSpeed() == Monitoring.location) {

@@ -14,9 +14,9 @@ public class Gui extends Application {
 
     public static void main(String[] args) {
         int carSpeed = 1;
-        int carNum = 2;
+        int carNum = 4;
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car(carSpeed + 1, "▷");
+            Car car = new Car(carSpeed + 1, "");
             if (i % 2 == 0) {
                 car.setIcon("●");
             } else if (i % 2 == 1) {
