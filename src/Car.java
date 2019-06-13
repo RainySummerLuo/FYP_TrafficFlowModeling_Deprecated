@@ -81,7 +81,7 @@ public class Car {
         return slowDistance;
     }
 
-    void setSlowDistance(int slowDistance) {
+    public void setSlowDistance(int slowDistance) {
         this.slowDistance = slowDistance;
     }
     */
