@@ -1,20 +1,19 @@
 public class Car {
     private int distance;
-    private int slowDistance;
+    // private int slowDistance;
     private int location;
     private int speed;
-    private int acceleration;
+    // private int acceleration;
     private int time;
-    private boolean isSlow;
-    private int round;
+    // private int round;
     private String icon;
+    private boolean stop;
 
     Car(int speed, String icon) {
         this.speed = speed;
-        isSlow = false;
-        acceleration = 1;
+        // acceleration = 1;
         time = 0;
-        round = 0;
+        // round = 0;
         this.icon = icon;
     }
 
@@ -34,6 +33,7 @@ public class Car {
         this.speed = speed;
     }
 
+    /*
     public int getAcceleration() {
         return acceleration;
     }
@@ -41,6 +41,7 @@ public class Car {
     public void setAcceleration(int acceleration) {
         this.acceleration = acceleration;
     }
+    */
 
     int getTime() {
         return time;
@@ -67,23 +68,15 @@ public class Car {
         distance = location;
     }
 
-    void setRound(int round) {
-        this.round = round;
+    boolean isStop() {
+        return stop;
     }
 
-    boolean getSlow() {
-        return isSlow;
+    void setStop(boolean stop) {
+        this.stop = stop;
     }
 
-    void setSlow(boolean slow) {
-        this.isSlow = slow;
-    }
-
-    @SuppressWarnings("unused")
-    public int getRound() {
-        return round;
-    }
-
+    /*
     int getSlowDistance() {
         return slowDistance;
     }
@@ -91,4 +84,5 @@ public class Car {
     void setSlowDistance(int slowDistance) {
         this.slowDistance = slowDistance;
     }
+    */
 }

@@ -84,34 +84,46 @@ public class GuiController implements Initializable {
 
             int safeDistance = car.getSpeed() > Road.carDistance ? car.getSpeed() : Road.carDistance;
 
-            car.setSlow(false);
+            car.setStop(false);
 
             int carTillEnd = Gui.roadLength - currDistance;
             if (carTillEnd < safeDistance) {
                 for (int i = 1; i <= carTillEnd; i++) {
                     if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
-                        car.setSlow(true);
-                        // car.setSlowDistance(i - miniDistance);
+                        car.setStop(true);
+                        break;
                     }
                 }
                 for (int i = 1; i <= safeDistance - carTillEnd; i++) {
-                    if (carsLocMap.containsKey(i) || (i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
-                        car.setSlow(true);
-                        // car.setSlowDistance(carTillEnd + i - miniDistance);
+                    if (carsLocMap.containsKey(i)) {
+                        car.setStop(true);
+                        break;
+                    } else if (i == Roadblock.location) {
+                        car.setStop(true);
+                        break;
+                    } else if (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0) {
+                        car.setStop(true);
+                        break;
                     }
                 }
             } else {
                 for (int i = 1; i <= safeDistance; i++) {
-                    if (carsLocMap.containsKey(currDistance + i) || (currDistance + i == Roadblock.location || (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0))) {
-                        car.setSlow(true);
-                        // car.setSlowDistance((i - miniDistance) > 0 ? (i - miniDistance) : (i - 1));
+                    if (carsLocMap.containsKey(currDistance + i)) {
+                        car.setStop(true);
+                        break;
+                    } else if (currDistance + i == Roadblock.location) {
+                        car.setStop(true);
+                        break;
+                    } else if (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0) {
+                        car.setStop(true);
+                        break;
                     }
                 }
             }
 
-            if (car.getSlow()) {
+            if (car.isStop()) {
                 car.setSpeed(0);
-            } else {
+            } else if (!car.isStop()){
                 car.setSpeed(Road.maxSpeed);
             }
         }
@@ -215,7 +227,7 @@ public class GuiController implements Initializable {
             int distance_new = distance + speed * time;
             car.setDistance(distance_new);
             car.setLocation(distance_new % Gui.roadLength);
-            car.setRound(distance_new / Gui.roadLength);
+            //car.setRound(distance_new / Gui.roadLength);
             car.setTime(car.getTime() + 1);
         }
     }
