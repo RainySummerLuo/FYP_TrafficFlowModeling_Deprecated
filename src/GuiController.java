@@ -142,6 +142,7 @@ public class GuiController implements Initializable {
     private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         /* Roadside '==='s */
         StringBuilder strRoadLane = new StringBuilder();
+        //noinspection StringRepeatCanBeUsed
         for (int i = 0; i <= Gui.roadLength + 1; i++) {
             strRoadLane.append("=");
         }
