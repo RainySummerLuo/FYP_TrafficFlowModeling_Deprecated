@@ -51,10 +51,10 @@ public class GuiController implements Initializable {
     }
 
     public void roadblock() {
-        if (Roadblock.location != 0) {
-            Roadblock.location = 0;
-        } else {
-            Roadblock.location = 75;
+        for (RoadFacility facility : Gui.roadFacilities) {
+            if (facility.getName().equals("roadblock")) {
+                facility.setEnable(!facility.isEnable());
+            }
         }
     }
 
@@ -68,23 +68,35 @@ public class GuiController implements Initializable {
             carsLocMap.put(car.getLocation(), car);
         }
 
-        carJudgement(carsLocMap);
+        TreeMap<Integer, RoadFacility> facilityMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (RoadFacility facility : Gui.roadFacilities) {
+            facilityMap.put(facility.getLocation(), facility);
+        }
+
+        TreeMap<Integer, RoadFacility> facilityMapEnable = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (RoadFacility facility : Gui.roadFacilities) {
+            if (facility.isEnable() && !facility.getName().equals("monitor")) {
+                facilityMapEnable.put(facility.getLocation(), facility);
+            }
+        }
+
+        carJudgement(carsLocMap, facilityMapEnable);
         carMovement(carsLocMap);
 
         Monitor(carsLocMap);
 
-        guiRoadText(carsLocMap);
+        guiRoadText(carsLocMap, facilityMap);
         guiInfoText();
     }
 
-    private void carJudgement(TreeMap<Integer, Car> carsLocMap) {
+    private void carJudgement(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             int currDistance = entry.getKey();
             Car car = entry.getValue();
 
-            int safeDistance;
-            if (Road.maxSpeed > Road.carDistance) safeDistance = Road.maxSpeed;
-            else safeDistance = Road.carDistance;
+            int safeDistance = Road.carDistance;
+            // if (Road.maxSpeed > Road.carDistance) safeDistance = Road.maxSpeed;
+            // else safeDistance = Road.carDistance;
 
             car.setStop(false);
 
@@ -94,35 +106,26 @@ public class GuiController implements Initializable {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
-                    } else if (currDistance + i == Roadblock.location) {
-                        car.setStop(true);
-                        break;
-                    } else if (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
                     }
                 }
-                for (int i = 1; i <= safeDistance - carTillEnd; i++) {
+                for (int i = 1; i <= safeDistance - carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(i)) {
                         car.setStop(true);
                         break;
-                    } else if (i == Roadblock.location) {
-                        car.setStop(true);
-                        break;
-                    } else if (i == Trafficlight.location && Trafficlight.redlight > 0) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
                     }
                 }
             } else {
-                for (int i = 1; i < safeDistance; i++) {
+                for (int i = 1; i < safeDistance + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
-                    } else if (currDistance + i == Roadblock.location) {
-                        car.setStop(true);
-                        break;
-                    } else if (currDistance + i == Trafficlight.location && Trafficlight.redlight > 0) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
                     }
@@ -136,7 +139,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void guiRoadText(TreeMap<Integer, Car> carsLocMap) {
+    private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         /* Roadside '==='s */
         StringBuilder strRoadLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength + 1; i++) {
@@ -148,19 +151,27 @@ public class GuiController implements Initializable {
         /* Roadblock and Traffic light */
         StringBuilder strRoad = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-
             for (int j = 1; j < Gui.roadLength + 1; j++) {
                 if (i < 4) {
-                    if (j == Roadblock.location) {
-                        strRoad.append(Roadblock.icon);
-                    } else if (j == Trafficlight.location) {
-                        if (Trafficlight.redlight > 0) {
-                            strRoad.append(Trafficlight.redlightIcon);
-                        } else if (Trafficlight.greenlight > 0) {
-                            strRoad.append(Trafficlight.greenlightIcon);
+                    if (facilityMap.containsKey(j)) {
+                        RoadFacility facility = facilityMap.get(j);
+                        if (facility.getName().equals("trafficlight")) {
+                            Trafficlight trafficlight = (Trafficlight) facility;
+                            if (trafficlight.isEnable()) {
+                                strRoad.append(trafficlight.getRedlightIcon());
+                            } else {
+                                strRoad.append(trafficlight.getGreenlightIcon());
+                            }
+                        } else if (facility.getName().equals("roadblock")) {
+                            Roadblock roadblock = (Roadblock) facility;
+                            if (roadblock.isEnable()) {
+                                strRoad.append("|");
+                            } else {
+                                strRoad.append(" ");
+                            }
+                        } else {
+                            strRoad.append(facilityMap.get(j).getIcon());
                         }
-                    } else if (j == Monitoring.location) {
-                        strRoad.append(Monitoring.icon);
                     } else {
                         strRoad.append(" ");
                     }
@@ -168,14 +179,15 @@ public class GuiController implements Initializable {
                     strRoad.append(" ");
                 }
             }
-
             strRoad.append("\n");
         }
         facilityLabel.setText(String.valueOf(strRoad));
 
         /* Cars on the road */
         StringBuilder strCar = new StringBuilder();
-        for (int i = 1; i <= Gui.roadLength; i++) {
+        for (
+                int i = 1;
+                i <= Gui.roadLength; i++) {
             if (carsLocMap.containsKey(i)) {
                 String icon = carsLocMap.get(i).getIcon();
                 strCar.append(icon);
@@ -187,39 +199,57 @@ public class GuiController implements Initializable {
     }
 
     private void guiInfoText() {
+        Monitor monitor = null;
+        Trafficlight trafficlight = null;
+        for (RoadFacility facility : Gui.roadFacilities) {
+            if (facility.getName().equals("monitor")) {
+                monitor = (Monitor) facility;
+            } else if (facility.getName().equals("trafficlight")) {
+                trafficlight = (Trafficlight) facility;
+            }
+        }
         StringBuilder strInfo = new StringBuilder();
 
         int time = Gui.cars.get(0).getTime();
         strInfo.append("Time: ").append(time);
 
-        int carNum = Monitoring.carNum;
-        strInfo.append(" | Car: ").append(carNum);
+        assert monitor != null;
+        int carNum = monitor.getCarNum();
+        strInfo.append(" | Count: ").append(carNum);
         int density = (carNum / Gui.periodSecond * 3600) / time;
         strInfo.append(" Flow: ").append(density).append("veh/h");
 
         String roadblock;
-        if (Roadblock.location > 0) {
-            roadblock = " | Roadblock " + Roadblock.location + " | ";
-        } else {
-            roadblock = " | No Roadblock | ";
-        }
-        strInfo.append(roadblock);
 
-        String trafficlight = "";
-        if (Trafficlight.redlight > 0) {
-            trafficlight = "Red Light " + Trafficlight.redlight + "  ";
-            Trafficlight.redlight -= 1;
-            if (Trafficlight.redlight == 0) {
-                Trafficlight.greenlight = Trafficlight.greenlightPeriod;
-            }
-        } else if (Trafficlight.greenlight > 0) {
-            trafficlight = "Green Light " + Trafficlight.greenlight;
-            Trafficlight.greenlight -= 1;
-            if (Trafficlight.greenlight == 0) {
-                Trafficlight.redlight = Trafficlight.redlightPeriod;
+        for (RoadFacility facility : Gui.roadFacilities) {
+            if (facility.getName().equals("roadblock")) {
+                if (facility.isEnable()) {
+                    roadblock = " | Roadblock " + facility.getLocation() + " | ";
+                } else {
+                    roadblock = " | No Roadblock | ";
+                }
+                strInfo.append(roadblock);
             }
         }
-        strInfo.append(trafficlight);
+
+        String trafficlightStatus = "";
+        assert trafficlight != null;
+        if (trafficlight.isEnable()) {
+            trafficlightStatus = "Red Light " + trafficlight.getGreenlight() + "  ";
+            trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
+            if (trafficlight.getGreenlight() == 0) {
+                trafficlight.setRedlight(trafficlight.getRedlightPeriod());
+                trafficlight.setEnable(false);
+            }
+        } else if (!trafficlight.isEnable()) {
+            trafficlightStatus = "Green Light " + trafficlight.getRedlight() + "  ";
+            trafficlight.setRedlight(trafficlight.getRedlight() - 1);
+            if (trafficlight.getRedlight() == 0) {
+                trafficlight.setGreenlight(trafficlight.getGreenlightPeriod());
+                trafficlight.setEnable(true);
+            }
+        }
+        strInfo.append(trafficlightStatus);
         infoLabel.setText(String.valueOf(strInfo));
     }
 
@@ -227,22 +257,34 @@ public class GuiController implements Initializable {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
             /* Car's Advancement */
-            int distance = car.getDistance();
             int speed = car.getSpeed();
             int time = Gui.periodSecond;
-            int distance_new = distance + speed * time;
-            car.setDistance(distance_new);
-            car.setLocation(distance_new % Gui.roadLength);
-            //car.setRound(distance_new / Gui.roadLength);
-            car.setTime(car.getTime() + 1);
+            car.setDistance(speed * time);
+            car.setLocation(car.getDistance() % Gui.roadLength);
+            car.setTime(time);
+            for (int i = 1; i < car.getSpeed(); i++) {
+                for (RoadFacility facility : Gui.roadFacilities) {
+                    if (facility.getName().equals("monitor")) {
+                        if (car.getLocation() + i == facility.getLocation()) {
+                            Monitor monitor = (Monitor) facility;
+                            monitor.setCarNum(monitor.getCarNum() + 1);
+                        }
+                    }
+                }
+            }
         }
     }
 
     private void Monitor(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
-            if (car.getLocation() + car.getSpeed() == Monitoring.location) {
-                Monitoring.carNum += 1;
+            for (RoadFacility facility : Gui.roadFacilities) {
+                if (facility.getName().equals("monitor")) {
+                    if (car.getLocation() + car.getSpeed() == facility.getLocation()) {
+                        Monitor monitor = (Monitor) facility;
+                        monitor.setCarNum(monitor.getCarNum() + 1);
+                    }
+                }
             }
         }
     }
