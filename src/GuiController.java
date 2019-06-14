@@ -232,7 +232,7 @@ public class GuiController implements Initializable {
                 if (facility.isEnable()) {
                     roadblock = " | Roadblock " + facility.getLocation();
                 } else {
-                    roadblock = " | Roadblock ✗";
+                    roadblock = " | Roadblock ✘";
                 }
             }
         }
