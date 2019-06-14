@@ -9,7 +9,8 @@
 <?import javafx.scene.text.Font?>
 
 <!--suppress JavaFxDefaultTag -->
-<GridPane alignment="center" hgap="10" prefHeight="318.0" prefWidth="651.0" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="GuiController">
+
+<GridPane alignment="center" hgap="10" prefHeight="318.0" prefWidth="651.0" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GuiController">
     <columnConstraints>
         <ColumnConstraints />
     </columnConstraints>
@@ -36,14 +37,14 @@
                         <Font name="Consolas" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="infoLabel" layoutX="42.0" layoutY="150.0" prefHeight="22.0" prefWidth="793.0" text=" ">
-                    <font>
-                        <Font name="Consolas" size="18.0" />
-                    </font>
-                </Label>
                 <Label fx:id="facilityLabel" layoutX="19.0" layoutY="33.0" prefHeight="151.0" prefWidth="927.0">
                     <font>
                         <Font name="Consolas" size="20.0" />
+                    </font>
+                </Label>
+                <Label fx:id="infoLabel" layoutX="34.0" layoutY="157.0" prefHeight="22.0" prefWidth="872.0" text=" ">
+                    <font>
+                        <Font name="Consolas" size="18.0" />
                     </font>
                 </Label>
             </children>

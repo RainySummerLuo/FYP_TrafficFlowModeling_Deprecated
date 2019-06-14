@@ -33,7 +33,7 @@ public class Gui extends Application {
         roadFacilities.add(trafficlight);
         Monitor monitoring = new Monitor(20, ":");
         roadFacilities.add(monitoring);
-        Crosswalk crosswalk = new Crosswalk(30, "≣");
+        Crosswalk crosswalk = new Crosswalk(30, "≣", 8);
         roadFacilities.add(crosswalk);
         launch(args);
     }

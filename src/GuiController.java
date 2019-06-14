@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -95,8 +96,6 @@ public class GuiController implements Initializable {
             Car car = entry.getValue();
 
             int safeDistance = Road.carDistance;
-            // if (Road.maxSpeed > Road.carDistance) safeDistance = Road.maxSpeed;
-            // else safeDistance = Road.carDistance;
 
             car.setStop(false);
 
@@ -201,17 +200,24 @@ public class GuiController implements Initializable {
     private void guiInfoText() {
         Monitor monitor = null;
         Trafficlight trafficlight = null;
+        Crosswalk crosswalk = null;
         for (RoadFacility facility : Gui.roadFacilities) {
-            if (facility.getName().equals("monitor")) {
-                monitor = (Monitor) facility;
-            } else if (facility.getName().equals("trafficlight")) {
-                trafficlight = (Trafficlight) facility;
+            switch (facility.getName()) {
+                case "monitor":
+                    monitor = (Monitor) facility;
+                    break;
+                case "trafficlight":
+                    trafficlight = (Trafficlight) facility;
+                    break;
+                case "crosswalk":
+                    crosswalk = (Crosswalk) facility;
+                    break;
             }
         }
         StringBuilder strInfo = new StringBuilder();
 
         int time = Gui.cars.get(0).getTime();
-        strInfo.append("► Time: ").append(time);
+        strInfo.append("Time: ").append(time);
 
         assert monitor != null;
         int carNum = monitor.getCarNum();
@@ -219,37 +225,56 @@ public class GuiController implements Initializable {
         int density = (carNum / Gui.periodSecond * 3600) / time;
         strInfo.append(" Flow: ").append(String.format("%3s", density)).append("veh/h");
 
-        String roadblock;
+        String roadblock = null;
 
         for (RoadFacility facility : Gui.roadFacilities) {
             if (facility.getName().equals("roadblock")) {
                 if (facility.isEnable()) {
-                    roadblock = " | Roadblock " + facility.getLocation() + " | ";
+                    roadblock = " | Roadblock " + facility.getLocation();
                 } else {
-                    roadblock = " | No Roadblock | ";
+                    roadblock = " | Roadblock ✗";
                 }
-                strInfo.append(roadblock);
             }
         }
 
         String trafficlightStatus = "";
         assert trafficlight != null;
         if (trafficlight.isEnable()) {
-            trafficlightStatus = " Red  Light " + String.format("%2s", trafficlight.getGreenlight()) + "  ";
+            trafficlightStatus = " | Red  Light " + String.format("%2s", trafficlight.getGreenlight());
             trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
             if (trafficlight.getGreenlight() == 0) {
                 trafficlight.setRedlight(trafficlight.getRedlightPeriod());
                 trafficlight.setEnable(false);
             }
         } else if (!trafficlight.isEnable()) {
-            trafficlightStatus = "Green Light " + String.format("%2s", trafficlight.getRedlight()) + "  ";
+            trafficlightStatus = " | Green Light " + String.format("%2s", trafficlight.getRedlight());
             trafficlight.setRedlight(trafficlight.getRedlight() - 1);
             if (trafficlight.getRedlight() == 0) {
                 trafficlight.setGreenlight(trafficlight.getGreenlightPeriod());
                 trafficlight.setEnable(true);
             }
         }
-        strInfo.append(trafficlightStatus).append('◄');
+
+        String crosswalkStatus;
+        assert crosswalk != null;
+        if (crosswalk.isEnable()) {
+            crosswalkStatus = " | Crosswalk " + crosswalk.getPassTime();
+            if (crosswalk.getPassTime() == 0) {
+                crosswalk.setEnable(false);
+            }
+            crosswalk.setPassTime(crosswalk.getPassTime() - 1);
+        } else {
+            crosswalkStatus = " | Crosswalk ✘";
+            Random ran = new Random();
+            int i = ran.nextInt(100);
+            if (i <= 5) {
+                crosswalk.setEnable(true);
+                crosswalk.setPassTime(crosswalk.getPassPeriod());
+            }
+        }
+        strInfo.append(crosswalkStatus);
+        strInfo.append(trafficlightStatus);
+        strInfo.append(roadblock);
         infoLabel.setText(String.valueOf(strInfo));
     }
 
