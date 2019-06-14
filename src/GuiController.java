@@ -142,7 +142,6 @@ public class GuiController implements Initializable {
     private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         /* Roadside '==='s */
         StringBuilder strRoadLane = new StringBuilder();
-        //noinspection StringRepeatCanBeUsed
         for (int i = 0; i <= Gui.roadLength + 1; i++) {
             strRoadLane.append("=");
         }
@@ -212,13 +211,13 @@ public class GuiController implements Initializable {
         StringBuilder strInfo = new StringBuilder();
 
         int time = Gui.cars.get(0).getTime();
-        strInfo.append("Time: ").append(time);
+        strInfo.append("► Time: ").append(time);
 
         assert monitor != null;
         int carNum = monitor.getCarNum();
-        strInfo.append(" | Count: ").append(carNum);
+        strInfo.append(" | Count: ").append(String.format("%2s", carNum));
         int density = (carNum / Gui.periodSecond * 3600) / time;
-        strInfo.append(" Flow: ").append(density).append("veh/h");
+        strInfo.append(" Flow: ").append(String.format("%3s", density)).append("veh/h");
 
         String roadblock;
 
@@ -236,21 +235,21 @@ public class GuiController implements Initializable {
         String trafficlightStatus = "";
         assert trafficlight != null;
         if (trafficlight.isEnable()) {
-            trafficlightStatus = "Red Light " + trafficlight.getGreenlight() + "  ";
+            trafficlightStatus = " Red  Light " + String.format("%2s", trafficlight.getGreenlight()) + "  ";
             trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
             if (trafficlight.getGreenlight() == 0) {
                 trafficlight.setRedlight(trafficlight.getRedlightPeriod());
                 trafficlight.setEnable(false);
             }
         } else if (!trafficlight.isEnable()) {
-            trafficlightStatus = "Green Light " + trafficlight.getRedlight() + "  ";
+            trafficlightStatus = "Green Light " + String.format("%2s", trafficlight.getRedlight()) + "  ";
             trafficlight.setRedlight(trafficlight.getRedlight() - 1);
             if (trafficlight.getRedlight() == 0) {
                 trafficlight.setGreenlight(trafficlight.getGreenlightPeriod());
                 trafficlight.setEnable(true);
             }
         }
-        strInfo.append(trafficlightStatus);
+        strInfo.append(trafficlightStatus).append('◄');
         infoLabel.setText(String.valueOf(strInfo));
     }
 
