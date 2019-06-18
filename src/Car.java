@@ -1,11 +1,12 @@
+/**
+ * @author Laurence
+ */
 public class Car {
     private int distance;
-    // private int slowDistance;
     private int location;
     private int speed;
-    // private int acceleration;
+    private int acceleration;
     private int time;
-    // private int round;
     private String icon;
     private boolean stop;
 
@@ -33,7 +34,6 @@ public class Car {
         this.speed = speed;
     }
 
-    /*
     public int getAcceleration() {
         return acceleration;
     }
@@ -41,7 +41,6 @@ public class Car {
     public void setAcceleration(int acceleration) {
         this.acceleration = acceleration;
     }
-    */
 
     int getTime() {
         return time;
@@ -75,14 +74,4 @@ public class Car {
     void setStop(boolean stop) {
         this.stop = stop;
     }
-
-    /*
-    int getSlowDistance() {
-        return slowDistance;
-    }
-
-    public void setSlowDistance(int slowDistance) {
-        this.slowDistance = slowDistance;
-    }
-    */
 }

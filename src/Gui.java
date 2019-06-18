@@ -6,9 +6,12 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
+/**
+ * @author Laurence
+ */
 public class Gui extends Application {
     static int periodSecond = 1;
-    static int periodThread = 200;
+    static int periodThread = 100;
     static int roadLength = 80;
     static ArrayList<Car> cars = new ArrayList<>();
     static ArrayList<RoadFacility> roadFacilities = new ArrayList<>();
@@ -27,7 +30,7 @@ public class Gui extends Application {
             cars.add(car);
         }
 
-        Roadblock roadblock = new Roadblock(75, "|", true);
+        Roadblock roadblock = new Roadblock(75, "|", false);
         roadFacilities.add(roadblock);
         Trafficlight trafficlight = new Trafficlight(50, 10, 10, "¤", "»");
         roadFacilities.add(trafficlight);
@@ -43,6 +46,7 @@ public class Gui extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("Gui.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
+        primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.show();
     }
 }

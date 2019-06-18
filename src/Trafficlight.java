@@ -56,7 +56,7 @@ class Trafficlight extends RoadFacility {
         this.greenlightIcon = greenlightIcon;
     }
 
-    public String getRedlightIcon() {
+    String getRedlightIcon() {
         return redlightIcon;
     }
 

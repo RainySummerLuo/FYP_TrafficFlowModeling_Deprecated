@@ -10,6 +10,9 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
+/**
+ * @author Laurence
+ */
 public class GuiController implements Initializable {
     @FXML
     private Button clearBtn;
@@ -34,7 +37,7 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // new Alert(Alert.AlertType.CONFIRMATION);
+        //noinspection AlibabaAvoidManuallyCreateThread
         Thread thread = new Thread(() -> {
             Runnable updater = this::refresh;
             while (true) {
@@ -53,7 +56,7 @@ public class GuiController implements Initializable {
 
     public void roadblock() {
         for (RoadFacility facility : Gui.roadFacilities) {
-            if (facility.getName().equals("roadblock")) {
+            if ("roadblock".equals(facility.getName())) {
                 facility.setEnable(!facility.isEnable());
             }
         }
@@ -76,7 +79,7 @@ public class GuiController implements Initializable {
 
         TreeMap<Integer, RoadFacility> facilityMapEnable = new TreeMap<>((o1, o2) -> o2 - o1);
         for (RoadFacility facility : Gui.roadFacilities) {
-            if (facility.isEnable() && !facility.getName().equals("monitor")) {
+            if (facility.isEnable() && !"monitor".equals(facility.getName())) {
                 facilityMapEnable.put(facility.getLocation(), facility);
             }
         }
@@ -84,7 +87,7 @@ public class GuiController implements Initializable {
         carJudgement(carsLocMap, facilityMapEnable);
         carMovement(carsLocMap);
 
-        Monitor(carsLocMap);
+        monitor(carsLocMap);
 
         guiRoadText(carsLocMap, facilityMap);
         guiInfoText();
@@ -149,19 +152,20 @@ public class GuiController implements Initializable {
 
         /* Roadblock and Traffic light */
         StringBuilder strRoad = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
+        int interval = 5;
+        for (int i = 0; i < interval; i++) {
             for (int j = 1; j < Gui.roadLength + 1; j++) {
                 if (i < 4) {
                     if (facilityMap.containsKey(j)) {
                         RoadFacility facility = facilityMap.get(j);
-                        if (facility.getName().equals("trafficlight")) {
+                        if ("trafficlight".equals(facility.getName())) {
                             Trafficlight trafficlight = (Trafficlight) facility;
                             if (trafficlight.isEnable()) {
                                 strRoad.append(trafficlight.getRedlightIcon());
                             } else {
                                 strRoad.append(trafficlight.getGreenlightIcon());
                             }
-                        } else if (facility.getName().equals("roadblock")) {
+                        } else if ("roadblock".equals(facility.getName())) {
                             Roadblock roadblock = (Roadblock) facility;
                             if (roadblock.isEnable()) {
                                 strRoad.append("|");
@@ -197,6 +201,7 @@ public class GuiController implements Initializable {
         laneLabel.setText(String.valueOf(strCar));
     }
 
+    @SuppressWarnings("AlibabaMethodTooLong")
     private void guiInfoText() {
         Monitor monitor = null;
         Trafficlight trafficlight = null;
@@ -212,6 +217,7 @@ public class GuiController implements Initializable {
                 case "crosswalk":
                     crosswalk = (Crosswalk) facility;
                     break;
+                default:
             }
         }
         StringBuilder strInfo = new StringBuilder();
@@ -228,7 +234,7 @@ public class GuiController implements Initializable {
         String roadblock = null;
 
         for (RoadFacility facility : Gui.roadFacilities) {
-            if (facility.getName().equals("roadblock")) {
+            if ("roadblock".equals(facility.getName())) {
                 if (facility.isEnable()) {
                     roadblock = " | Roadblock " + facility.getLocation();
                 } else {
@@ -267,7 +273,8 @@ public class GuiController implements Initializable {
             crosswalkStatus = " | Crosswalk ✘";
             Random ran = new Random();
             int i = ran.nextInt(100);
-            if (i <= 5) {
+            int interval = 5;
+            if (i <= interval) {
                 crosswalk.setEnable(true);
                 crosswalk.setPassTime(crosswalk.getPassPeriod());
             }
@@ -289,7 +296,7 @@ public class GuiController implements Initializable {
             car.setTime(time);
             for (int i = 1; i < car.getSpeed(); i++) {
                 for (RoadFacility facility : Gui.roadFacilities) {
-                    if (facility.getName().equals("monitor")) {
+                    if ("monitor".equals(facility.getName())) {
                         if (car.getLocation() + i == facility.getLocation()) {
                             Monitor monitor = (Monitor) facility;
                             monitor.setCarNum(monitor.getCarNum() + 1);
@@ -300,11 +307,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void Monitor(TreeMap<Integer, Car> carsLocMap) {
+    private void monitor(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
             for (RoadFacility facility : Gui.roadFacilities) {
-                if (facility.getName().equals("monitor")) {
+                if ("monitor".equals(facility.getName())) {
                     if (car.getLocation() + car.getSpeed() == facility.getLocation()) {
                         Monitor monitor = (Monitor) facility;
                         monitor.setCarNum(monitor.getCarNum() + 1);

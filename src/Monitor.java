@@ -1,5 +1,5 @@
 class Monitor extends RoadFacility {
-    private int carNum = 0;
+    private int carNum;
 
     Monitor(int location, String icon) {
         super("monitor", location, icon, true);

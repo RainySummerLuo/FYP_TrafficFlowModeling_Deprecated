@@ -8,7 +8,7 @@ class Crosswalk extends RoadFacility {
         passTime = 0;
     }
 
-    public int getPassPeriod() {
+    int getPassPeriod() {
         return passPeriod;
     }
 
@@ -16,11 +16,11 @@ class Crosswalk extends RoadFacility {
         this.passPeriod = passPeriod;
     }
 
-    public int getPassTime() {
+    int getPassTime() {
         return passTime;
     }
 
-    public void setPassTime(int passTime) {
+    void setPassTime(int passTime) {
         this.passTime = passTime;
     }
 }
