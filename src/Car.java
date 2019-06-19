@@ -1,7 +1,7 @@
 /**
  * @author Laurence
  */
-public class Car {
+class Car {
     private int distance;
     private int location;
     private int speed;

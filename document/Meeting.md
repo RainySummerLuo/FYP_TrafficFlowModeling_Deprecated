@@ -20,6 +20,6 @@
     3. traffic light
   - interpretation / implementation
   - application (input / output)
-    - Loation of traffic light
+    - Location of traffic light
     - Car speed
     - Car density

@@ -13,7 +13,7 @@ import java.util.TreeMap;
 /**
  * @author Laurence
  */
-public class GuiController implements Initializable {
+class GuiController implements Initializable {
     @FXML
     private Button clearBtn;
 
