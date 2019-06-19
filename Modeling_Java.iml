@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="guava-23.0-javadoc" level="project" />
+    <orderEntry type="library" name="guava-28.0-jre-javadoc" level="project" />
   </component>
 </module>
