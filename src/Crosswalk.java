@@ -23,4 +23,9 @@ class Crosswalk extends RoadFacility {
     void setPassTime(int passTime) {
         this.passTime = passTime;
     }
+
+    void newPedestrian() {
+        super.setEnable(true);
+        passTime = passPeriod;
+    }
 }

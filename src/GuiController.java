@@ -263,6 +263,12 @@ public class GuiController implements Initializable {
 
         String crosswalkStatus;
         assert crosswalk != null;
+        Random ran = new Random();
+        int i = ran.nextInt(100);
+        int possibility = 5;
+        if (i <= possibility) {
+            crosswalk.newPedestrian();
+        }
         if (crosswalk.isEnable()) {
             crosswalkStatus = " | Crosswalk " + crosswalk.getPassTime();
             if (crosswalk.getPassTime() == 0) {
@@ -271,13 +277,6 @@ public class GuiController implements Initializable {
             crosswalk.setPassTime(crosswalk.getPassTime() - 1);
         } else {
             crosswalkStatus = " | Crosswalk ✘";
-            Random ran = new Random();
-            int i = ran.nextInt(100);
-            int interval = 5;
-            if (i <= interval) {
-                crosswalk.setEnable(true);
-                crosswalk.setPassTime(crosswalk.getPassPeriod());
-            }
         }
         strInfo.append(crosswalkStatus);
         strInfo.append(trafficlightStatus);
