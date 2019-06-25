@@ -18,9 +18,3 @@ Students in this project are suggested to accomplish following:
 
 ## Movsim: Multi-model open-source vehicular-traffic Simulator
 - [Github Repo](https://github.com/movsim/movsim)
-
-## Traffic Flow Dynamics
-Traffic Flow Dynamics - Data, Models and Simulation
-by Martin Treiber and Arne Kesting
-- PDF File: [TrafficFlowDynamics_DataModelsandSimulation.pdf](./TrafficFlowDynamics_DataModelsandSimulation.pdf) <br/>
-(Only for research purpose, please respect the copyright.)
