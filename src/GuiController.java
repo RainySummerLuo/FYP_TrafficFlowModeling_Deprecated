@@ -5,10 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Laurence
@@ -21,13 +18,19 @@ public class GuiController implements Initializable {
     private Button slowBtn;
 
     @FXML
-    private Label laneLabel;
+    private Label laneLabelUp;
+
+    @FXML
+    private Label laneLabelDown;
 
     @FXML
     private Label roadLabelUp;
 
     @FXML
     private Label roadLabelDown;
+
+    @FXML
+    private Label roadLabelMiddle;
 
     @FXML
     private Label infoLabel;
@@ -68,115 +71,128 @@ public class GuiController implements Initializable {
 
     private void refresh() {
         TreeMap<Integer, Car> carsLocMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, Car> carsRevLocMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        ArrayList<TreeMap<Integer, Car>> carMapList = new ArrayList<>();
         for (Car car : Gui.cars) {
-            carsLocMap.put(car.getLocation(), car);
+            if (car.isLeftRight()) {
+                carsLocMap.put(car.getLocation(), car);
+            } else {
+                carsRevLocMap.put(car.getLocation(), car);
+            }
         }
+        carMapList.add(carsLocMap);
+        carMapList.add(carsRevLocMap);
 
         TreeMap<Integer, RoadFacility> facilityMap = new TreeMap<>((o1, o2) -> o2 - o1);
         for (RoadFacility facility : Gui.roadFacilities) {
             facilityMap.put(facility.getLocation(), facility);
         }
 
-        TreeMap<Integer, RoadFacility> facilityMapEnable = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, RoadFacility> facilityEnabledMap = new TreeMap<>((o1, o2) -> o2 - o1);
         for (RoadFacility facility : Gui.roadFacilities) {
             if (facility.isEnable() && !"monitor".equals(facility.getName())) {
-                facilityMapEnable.put(facility.getLocation(), facility);
+                facilityEnabledMap.put(facility.getLocation(), facility);
             }
         }
 
-        carJudgement(carsLocMap, facilityMapEnable);
-        carMovement(carsLocMap);
+        carJudgement(carMapList, facilityEnabledMap);
+        carMovement(carMapList);
 
         monitor(carsLocMap);
 
-        guiRoadText(carsLocMap, facilityMap);
+        guiRoadText(carsLocMap, carsRevLocMap, facilityMap);
         guiInfoText();
     }
 
-    private void carJudgement(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
-            int currDistance = entry.getKey();
-            Car car = entry.getValue();
+    private void carJudgement(ArrayList<TreeMap<Integer, Car>> carMapList, TreeMap<Integer, RoadFacility> facilityMap) {
+        for (TreeMap<Integer, Car> carsLocMap : carMapList) {
+            for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+                int currDistance = entry.getKey();
+                Car car = entry.getValue();
 
-            int safeDistance = Road.carDistance;
+                int safeDistance = Road.carDistance;
 
-            car.setStop(false);
+                car.setStop(false);
 
-            int carTillEnd = Gui.roadLength - currDistance;
-            if (carTillEnd < safeDistance) {
-                for (int i = 1; i <= carTillEnd; i++) {
-                    if (carsLocMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
-                        break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
-                        break;
+                int carTillEnd = Gui.roadLength - currDistance;
+                if (carTillEnd < safeDistance) {
+                    for (int i = 1; i <= carTillEnd; i++) {
+                        if (carsLocMap.containsKey(currDistance + i)) {
+                            car.setStop(true);
+                            break;
+                        } else if (facilityMap.containsKey(currDistance + i)) {
+                            car.setStop(true);
+                            break;
+                        }
+                    }
+                    for (int i = 1; i <= safeDistance - carTillEnd + 1; i++) {
+                        if (carsLocMap.containsKey(i)) {
+                            car.setStop(true);
+                            break;
+                        } else if (facilityMap.containsKey(currDistance + i)) {
+                            car.setStop(true);
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 1; i < safeDistance + 1; i++) {
+                        if (carsLocMap.containsKey(currDistance + i)) {
+                            car.setStop(true);
+                            break;
+                        } else if (facilityMap.containsKey(currDistance + i)) {
+                            car.setStop(true);
+                            break;
+                        }
                     }
                 }
-                for (int i = 1; i <= safeDistance - carTillEnd + 1; i++) {
-                    if (carsLocMap.containsKey(i)) {
-                        car.setStop(true);
-                        break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
-                        break;
-                    }
+                if (car.isStop()) {
+                    car.setSpeed(0);
+                } else {
+                    car.setSpeed(Road.maxSpeed);
                 }
-            } else {
-                for (int i = 1; i < safeDistance + 1; i++) {
-                    if (carsLocMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
-                        break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
-                        break;
-                    }
-                }
-            }
-            if (car.isStop()) {
-                car.setSpeed(0);
-            } else {
-                car.setSpeed(Road.maxSpeed);
             }
         }
     }
 
-    private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
+    private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, Car> carsRevLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         /* Roadside '==='s */
         StringBuilder strRoadLane = new StringBuilder();
+        StringBuilder strRoadMiddleLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength + 1; i++) {
             strRoadLane.append("=");
+            strRoadMiddleLane.append('-');
         }
         roadLabelUp.setText(String.valueOf(strRoadLane));
         roadLabelDown.setText(String.valueOf(strRoadLane));
+        roadLabelMiddle.setText(String.valueOf(strRoadMiddleLane));
 
         /* Roadblock and Traffic light */
         StringBuilder strRoad = new StringBuilder();
         int interval = 5;
         for (int i = 0; i < interval; i++) {
             for (int j = 1; j < Gui.roadLength + 1; j++) {
-                if (i < 4) {
-                    if (facilityMap.containsKey(j)) {
-                        RoadFacility facility = facilityMap.get(j);
-                        if ("trafficlight".equals(facility.getName())) {
-                            Trafficlight trafficlight = (Trafficlight) facility;
-                            if (trafficlight.isEnable()) {
-                                strRoad.append(trafficlight.getRedlightIcon());
-                            } else {
-                                strRoad.append(trafficlight.getGreenlightIcon());
-                            }
-                        } else if ("roadblock".equals(facility.getName())) {
-                            Roadblock roadblock = (Roadblock) facility;
-                            if (roadblock.isEnable()) {
-                                strRoad.append("|");
-                            } else {
-                                strRoad.append(" ");
-                            }
+
+                if (i == 2) {
+                    continue;
+                }
+                if (facilityMap.containsKey(j)) {
+                    RoadFacility facility = facilityMap.get(j);
+                    if ("trafficlight".equals(facility.getName())) {
+                        Trafficlight trafficlight = (Trafficlight) facility;
+                        if (trafficlight.isEnable()) {
+                            strRoad.append(trafficlight.getRedlightIcon());
                         } else {
-                            strRoad.append(facilityMap.get(j).getIcon());
+                            strRoad.append(trafficlight.getGreenlightIcon());
+                        }
+                    } else if ("roadblock".equals(facility.getName())) {
+                        Roadblock roadblock = (Roadblock) facility;
+                        if (roadblock.isEnable()) {
+                            strRoad.append("|");
+                        } else {
+                            strRoad.append(" ");
                         }
                     } else {
-                        strRoad.append(" ");
+                        strRoad.append(facilityMap.get(j).getIcon());
                     }
                 } else {
                     strRoad.append(" ");
@@ -188,9 +204,7 @@ public class GuiController implements Initializable {
 
         /* Cars on the road */
         StringBuilder strCar = new StringBuilder();
-        for (
-                int i = 1;
-                i <= Gui.roadLength; i++) {
+        for (int i = 1; i <= Gui.roadLength; i++) {
             if (carsLocMap.containsKey(i)) {
                 String icon = carsLocMap.get(i).getIcon();
                 strCar.append(icon);
@@ -198,7 +212,17 @@ public class GuiController implements Initializable {
                 strCar.append(" ");
             }
         }
-        laneLabel.setText(String.valueOf(strCar));
+        laneLabelDown.setText(String.valueOf(strCar));
+        StringBuilder strCarRev = new StringBuilder();
+        for (int i = 1; i <= Gui.roadLength; i++) {
+            if (carsRevLocMap.containsKey(i)) {
+                String icon = carsRevLocMap.get(i).getIcon();
+                strCarRev.append(icon);
+            } else {
+                strCarRev.append(" ");
+            }
+        }
+        laneLabelUp.setText(String.valueOf(strCarRev));
     }
 
     @SuppressWarnings("AlibabaMethodTooLong")
@@ -284,21 +308,27 @@ public class GuiController implements Initializable {
         infoLabel.setText(String.valueOf(strInfo));
     }
 
-    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
-            Car car = entry.getValue();
-            /* Car's Advancement */
-            int speed = car.getSpeed();
-            int time = Gui.periodSecond;
-            car.setDistance(speed * time);
-            car.setLocation(car.getDistance() % Gui.roadLength);
-            car.setTime(time);
-            for (int i = 1; i < car.getSpeed(); i++) {
-                for (RoadFacility facility : Gui.roadFacilities) {
-                    if ("monitor".equals(facility.getName())) {
-                        if (car.getLocation() + i == facility.getLocation()) {
-                            Monitor monitor = (Monitor) facility;
-                            monitor.setCarNum(monitor.getCarNum() + 1);
+    private void carMovement(ArrayList<TreeMap<Integer, Car>> carMapList) {
+        for (TreeMap<Integer, Car> carsLocMap : carMapList) {
+            for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+                Car car = entry.getValue();
+                /* Car's Advancement */
+                int time = Gui.periodSecond;
+                int speed = car.getSpeed();
+                car.setDistance(speed * time);
+                if (car.isLeftRight()) {
+                    car.setLocation(car.getDistance() % Gui.roadLength);
+                } else  {
+                    car.setLocation(Gui.roadLength - (car.getDistance() % Gui.roadLength));
+                }
+                car.setTime(time);
+                for (int i = 1; i < car.getSpeed(); i++) {
+                    for (RoadFacility facility : Gui.roadFacilities) {
+                        if ("monitor".equals(facility.getName())) {
+                            if (car.getLocation() + i == facility.getLocation()) {
+                                Monitor monitor = (Monitor) facility;
+                                monitor.setCarNum(monitor.getCarNum() + 1);
+                            }
                         }
                     }
                 }

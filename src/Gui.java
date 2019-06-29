@@ -20,11 +20,13 @@ public class Gui extends Application {
         int carSpeed = 1;
         int carNum = 2;
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car(carSpeed + 1, "");
+            Car car = new Car(carSpeed + 1, "", true);
             if (i % 2 == 0) {
                 car.setIcon("●");
+                car.setLeftRight(true);
             } else if (i % 2 == 1) {
                 car.setIcon("○");
+                car.setLeftRight(false);
             }
             car.setLocation(i);
             cars.add(car);
