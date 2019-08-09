@@ -9,15 +9,13 @@ public class Car {
     private int time;
     private String icon;
     private boolean stop;
-    private boolean leftRight;
 
-    Car(int speed, String icon, boolean leftRight) {
+    Car(int speed, String icon) {
         this.speed = speed;
         // acceleration = 1;
         time = 0;
         // round = 0;
         this.icon = icon;
-        this.leftRight = leftRight;
     }
 
     int getDistance() {
@@ -75,13 +73,5 @@ public class Car {
 
     void setStop(boolean stop) {
         this.stop = stop;
-    }
-
-    boolean isLeftRight() {
-        return leftRight;
-    }
-
-    void setLeftRight(boolean leftRight) {
-        this.leftRight = leftRight;
     }
 }
