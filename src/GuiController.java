@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 /**
  * @author Laurence
+ * @date 2019/9/23
  */
 public class GuiController implements Initializable {
     @FXML
@@ -63,7 +64,7 @@ public class GuiController implements Initializable {
     }
 
     public void slowDown() {
-
+        // TODO: slowDown() Function
     }
 
     private void refresh() {
@@ -103,8 +104,8 @@ public class GuiController implements Initializable {
             car.setStop(false);
 
             int carTillEnd = Gui.roadLength - currDistance;
-            if (carTillEnd < safeDistance) {
-                for (int i = 1; i <= carTillEnd; i++) {
+            if (carTillEnd < safeDistance + car.getSpeed()) {
+                for (int i = 1; i <= carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
@@ -113,7 +114,7 @@ public class GuiController implements Initializable {
                         break;
                     }
                 }
-                for (int i = 1; i <= safeDistance - carTillEnd + 1; i++) {
+                for (int i = 1; i <= safeDistance + car.getSpeed() - carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(i)) {
                         car.setStop(true);
                         break;
@@ -123,7 +124,7 @@ public class GuiController implements Initializable {
                     }
                 }
             } else {
-                for (int i = 1; i < safeDistance + 1; i++) {
+                for (int i = 1; i <= safeDistance + car.getSpeed() + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setStop(true);
                         break;
@@ -141,8 +142,19 @@ public class GuiController implements Initializable {
         }
     }
 
+    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            Car car = entry.getValue();
+            /* Car's Advancement */
+            int speed = car.getSpeed();
+            int time = Gui.periodSecond;
+            car.setTime(time);
+            car.setDistance(speed * time);
+            car.setLocation(car.getDistance() % Gui.roadLength);
+        }
+    }
+
     private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
-        /* Roadside '==='s */
         StringBuilder strRoadLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength + 1; i++) {
             strRoadLane.append("=");
@@ -246,7 +258,7 @@ public class GuiController implements Initializable {
         String trafficlightStatus = "";
         assert trafficlight != null;
         if (trafficlight.isEnable()) {
-            trafficlightStatus = " | Red  Light " + String.format("%2s", trafficlight.getGreenlight());
+            trafficlightStatus = " | Red Light " + String.format("%2s", trafficlight.getGreenlight());
             trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
             if (trafficlight.getGreenlight() == 0) {
                 trafficlight.setRedlight(trafficlight.getRedlightPeriod());
@@ -282,28 +294,6 @@ public class GuiController implements Initializable {
         strInfo.append(trafficlightStatus);
         strInfo.append(roadblock);
         infoLabel.setText(String.valueOf(strInfo));
-    }
-
-    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
-            Car car = entry.getValue();
-            /* Car's Advancement */
-            int speed = car.getSpeed();
-            int time = Gui.periodSecond;
-            car.setDistance(speed * time);
-            car.setLocation(car.getDistance() % Gui.roadLength);
-            car.setTime(time);
-            for (int i = 1; i < car.getSpeed(); i++) {
-                for (RoadFacility facility : Gui.roadFacilities) {
-                    if ("monitor".equals(facility.getName())) {
-                        if (car.getLocation() + i == facility.getLocation()) {
-                            Monitor monitor = (Monitor) facility;
-                            monitor.setCarNum(monitor.getCarNum() + 1);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void monitor(TreeMap<Integer, Car> carsLocMap) {
