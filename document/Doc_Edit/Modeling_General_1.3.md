@@ -4,6 +4,7 @@
 > v1.0: The first version.
 > v1.1: Fix images and add a $s$*-*$t$ diagram.
 > v1.2: Fix image of crosswalk and change font family.
+> v1.3: Arrange content and improve content on acceleration and deceleration.
 
 **Traffic Flow** is the study of the movement of individual drivers and vehicles between two points and the interactions they make with one another.
 
@@ -37,10 +38,27 @@ Basing on this model, we will consider these future improvements:
 2. A specific section on the road will be selected, and the `COUNT(Car)`, the number of cars that passed through this section in a specific time period can be counted, and the density of traffic flow at this point can be calculated.
 3. Traffic control devices such as traffic light, pedestrian crossing (zebra crossing) can be put on the road to study their influence on traffic. The location of these infrastructures should be able to be modified during the runtime.
 
+## Consideration on the Car Deceleration
+
+![Deceleration](./assets/004.png)
+
+Car's deceleration is a relatively complicate problem in the modeling of traffic flow. In reality, it depends heavily on the driver to decide the time and speed the car need to take for it to avoid collision. Thus, the deceleration value should be various in different situations.
+In our preliminary modeling, we will consider the car distance to be that between the head of one car and the tail of its front car. Although in reality, the front car is also travelling forward, and drivers will take that distance the front car travels into their consideration.
+
+![Deceleration Diagram](./assets/005.png)
+
+Given the de-acceleration $a$, the time $t$, and the speed of car before deceleration $v$, we can conclude that the distance car travels in the deceleration will be $s=vt+\frac12at^2$. And by the value of $s$, we can calculate the acceleration value $a$ needed to avoid collision.
+
+## Lane Changing
+
+![Lane Changing](./assets/003.png)
+
+In future development and improvement of our model, we will need to have multiple car lanes. In this case, to differentiate lanes, we name them as "Lane **1**", "Lane **2**", etc, and cars are able to change lanes. If they may have a relatively slow car in front and a small car distance, and in other lanes, there are longer car distance, then the car will switch the other lane.
+For the preliminary concern, we consider the car to be keeping its speed when changing lanes. While in future modeling, we may put it that the cars slow down in this process.
+
 ## Traffic Control Devices
 
 ![Zebra Crossing](./assets/002.png)
-
 
 The image above demonstrate a scenario of road with a pedestrian crossing (a zebra crossing, to be specific) on it. We may hereby discuss the circumstances of different traffic control devices:
 
@@ -54,21 +72,3 @@ Normally, the traffic lights have three types traffic signals: green, yellow (a.
 Crosswalks are set to keep pedestrians together where they can be seen by motorists, and where they can cross most safely across the flow of vehicular traffic. Cars should slow down at the crosswalk, no matter there's pedestrians or not. If pedestrians are already crossing the crosswalk, all cars should stop and wait until pedestrians crossed.
 3. Traffic Warning Signs ⚠️
 There are warning signs designed to alert drivers of road conditions or hazards that accidents are frequently occurred. For example, in China, there are warning signs alerting the existence of nearby schools and villages. In these roads, there may not be crosswalks, and drivers should slow down for the safety concerns of villager and school students.
-
-## Lane Changing
-
-![Lane Changing](./assets/003.png)
-
-In future development and improvement of our model, we will need to have multiple car lanes. In this case, to differentiate lanes, we name them as "Lane **1**", "Lane **2**", etc, and cars are able to change lanes. If they may have a relatively slow car in front and a small car distance, and in other lanes, there are longer car distance, then the car will switch the other lane.
-For the preliminary concern, we consider the car to be keeping its speed when changing lanes. While in future modeling, we may put it that the cars slow down in this process.
-
-## Consideration on the Car Deceleration
-
-![Deceleration](./assets/004.png)
-
-Car's deceleration is a relatively complicate problem in the modeling of traffic flow. In reality, it depends heavily on the driver to decide the time and speed the car need to take for it to avoid collision. Thus, the deceleration value should be various in different situations.
-In our preliminary modeling, we will consider the car distance to be that between the head of one car and the tail of its front car. Although in reality, the front car is also travelling forward, and drivers will take that distance the front car travels into their consideration.
-
-![Deceleration Diagram](./assets/005.png)
-
-Given the de-acceleration $a$, the time $t$, and the speed of car before deceleration $v$, we can conclude that the distance car travels in the deceleration will be $s=vt+\frac12at^2$. And by the value of $s$, we can calculate the acceleration value $a$ needed to avoid collision.
