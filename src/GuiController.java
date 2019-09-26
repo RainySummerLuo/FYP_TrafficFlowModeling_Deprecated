@@ -101,35 +101,35 @@ public class GuiController implements Initializable {
 
             int safeDistance = Road.safeDistance;
 
-            car.setStop(false);
+            car.setSlow(false);
 
             int carTillEnd = Gui.roadLength - currDistance;
             if (carTillEnd < safeDistance + car.getSpeed()) {
                 for (int i = 1; i <= carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     }
                 }
                 for (int i = 1; i <= safeDistance + car.getSpeed() - carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     }
                 }
             } else {
                 for (int i = 1; i <= safeDistance + car.getSpeed() + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setStop(true);
+                        car.setSlow(true);
                         break;
                     }
                 }
@@ -148,14 +148,14 @@ public class GuiController implements Initializable {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
             /* Car's Advancement */
-            int speed = car.getSpeed() + car.getA();
+            double speed = car.getSpeed() + car.getA();
             if (speed < 0) {
                 speed = 0;
             }
             car.setSpeed(speed);
             int time = Gui.periodSecond;
             car.setTime(time);
-            car.setDistance(speed * time);
+            car.setDistance((int) Math.floor(speed * time));
             car.setLocation(car.getDistance() % Gui.roadLength);
         }
     }
