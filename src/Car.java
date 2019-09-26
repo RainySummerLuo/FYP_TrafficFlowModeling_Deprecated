@@ -14,8 +14,8 @@ public class Car {
 
     Car() {
         speed = 0;
-        acceleration = 3;
-        deceleration = -4;
+        acceleration = 2;
+        deceleration = -2;
         time = 0;
     }
 

@@ -137,7 +137,7 @@ public class GuiController implements Initializable {
             if (car.isStop()) {
                 car.setA(car.getDeceleration());
             } else if (car.getSpeed() < Road.maxSpeed) {
-                    car.setA(car.getAcceleration());
+                car.setA(car.getAcceleration());
             } else {
                 car.setA(0);
             }
