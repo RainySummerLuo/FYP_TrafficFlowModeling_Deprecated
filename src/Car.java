@@ -6,16 +6,17 @@ public class Car {
     private int location;
     private int speed;
     private int acceleration;
+    private int deceleration;
+    private int a;
     private int time;
     private String icon;
     private boolean stop;
 
-    Car(int speed, String icon) {
-        this.speed = speed;
-        // acceleration = 1;
+    Car() {
+        speed = 0;
+        acceleration = 3;
+        deceleration = -4;
         time = 0;
-        // round = 0;
-        this.icon = icon;
     }
 
     int getDistance() {
@@ -36,10 +37,6 @@ public class Car {
 
     public int getAcceleration() {
         return acceleration;
-    }
-
-    public void setAcceleration(int acceleration) {
-        this.acceleration = acceleration;
     }
 
     int getTime() {
@@ -73,5 +70,17 @@ public class Car {
 
     void setStop(boolean stop) {
         this.stop = stop;
+    }
+
+    public int getDeceleration() {
+        return deceleration;
+    }
+
+    public int getA() {
+        return a;
+    }
+
+    public void setA(int a) {
+        this.a = a;
     }
 }

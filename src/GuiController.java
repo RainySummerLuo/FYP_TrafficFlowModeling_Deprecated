@@ -99,7 +99,7 @@ public class GuiController implements Initializable {
             int currDistance = entry.getKey();
             Car car = entry.getValue();
 
-            int safeDistance = Road.carDistance;
+            int safeDistance = Road.safeDistance;
 
             car.setStop(false);
 
@@ -135,9 +135,11 @@ public class GuiController implements Initializable {
                 }
             }
             if (car.isStop()) {
-                car.setSpeed(0);
+                car.setA(car.getDeceleration());
+            } else if (car.getSpeed() < Road.maxSpeed) {
+                    car.setA(car.getAcceleration());
             } else {
-                car.setSpeed(Road.maxSpeed);
+                car.setA(0);
             }
         }
     }
@@ -146,7 +148,11 @@ public class GuiController implements Initializable {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
             /* Car's Advancement */
-            int speed = car.getSpeed();
+            int speed = car.getSpeed() + car.getA();
+            if (speed < 0) {
+                speed = 0;
+            }
+            car.setSpeed(speed);
             int time = Gui.periodSecond;
             car.setTime(time);
             car.setDistance(speed * time);
