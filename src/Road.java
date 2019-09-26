@@ -1,4 +1,4 @@
 class Road {
-    static int maxSpeed = 10000;
+    static int maxSpeed = 5;
     static int safeDistance = 2;
 }
