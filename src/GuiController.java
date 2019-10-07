@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 /**
  * @author Laurence
- * @date 2019/9/23
+ * @date 2019/10/5
  */
 public class GuiController implements Initializable {
     @FXML
@@ -47,7 +47,7 @@ public class GuiController implements Initializable {
                     Thread.sleep(Gui.periodThread);
                 } catch (InterruptedException ignored) {
                 }
-                // UI update is run on the Application thread
+                // UI update run on the Application thread
                 Platform.runLater(updater);
             }
         });
@@ -305,12 +305,16 @@ public class GuiController implements Initializable {
     private void monitor(TreeMap<Integer, Car> carsLocMap) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             Car car = entry.getValue();
+            Monitor monitor = null;
             for (RoadFacility facility : Gui.roadFacilities) {
-                if ("monitor".equals(facility.getName())) {
-                    if (car.getLocation() + car.getSpeed() == facility.getLocation()) {
-                        Monitor monitor = (Monitor) facility;
-                        monitor.setCarNum(monitor.getCarNum() + 1);
-                    }
+                if (facility.getName().equalsIgnoreCase("monitor")) {
+                    monitor = (Monitor) facility;
+                }
+            }
+            for (int i = 1; i <= car.getSpeed() + Road.safeDistance; i++) {
+                assert monitor != null;
+                if (car.getLocation() + i == monitor.getLocation()) {
+                    monitor.setCarNum(monitor.getCarNum() + 1);
                 }
             }
         }
