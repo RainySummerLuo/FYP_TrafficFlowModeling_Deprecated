@@ -30,7 +30,7 @@ public class Gui extends Application {
             cars.add(car);
         }
 
-        Roadblock roadblock = new Roadblock(75, "|", false);
+        Roadblock roadblock = new Roadblock(10, "|", false);
         roadFacilities.add(roadblock);
         Trafficlight trafficlight = new Trafficlight(50, 10, 10, "¤", "»");
         roadFacilities.add(trafficlight);

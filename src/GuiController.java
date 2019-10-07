@@ -162,8 +162,8 @@ public class GuiController implements Initializable {
 
     private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         StringBuilder strRoadLane = new StringBuilder();
-        for (int i = 0; i <= Gui.roadLength + 1; i++) {
-            strRoadLane.append("=");
+        for (int i = 0; i <= Gui.roadLength - 1; i++) {
+            strRoadLane.append("——");
         }
         roadLabelUp.setText(String.valueOf(strRoadLane));
         roadLabelDown.setText(String.valueOf(strRoadLane));
@@ -210,33 +210,37 @@ public class GuiController implements Initializable {
         StringBuilder strCar = new StringBuilder();
         StringBuilder strRoad = new StringBuilder();
         for (int i = 1; i <= Gui.roadLength; i++) {
-            if (facilityMap.containsKey(i)) {
-                RoadFacility facility = facilityMap.get(i);
-                if ("trafficlight".equals(facility.getName())) {
-                    Trafficlight trafficlight = (Trafficlight) facility;
-                    if (trafficlight.isEnable()) {
-                        strRoad.append(trafficlight.getRedlightIcon());
+            if (i == 1 || i == Gui.roadLength) {
+                strRoad.append("|");
+            } else {
+                if (facilityMap.containsKey(i)) {
+                    RoadFacility facility = facilityMap.get(i);
+                    if ("trafficlight".equals(facility.getName())) {
+                        Trafficlight trafficlight = (Trafficlight) facility;
+                        if (trafficlight.isEnable()) {
+                            strRoad.append(trafficlight.getRedlightIcon());
+                        } else {
+                            strRoad.append(trafficlight.getGreenlightIcon());
+                        }
+                    } else if ("roadblock".equals(facility.getName())) {
+                        Roadblock roadblock = (Roadblock) facility;
+                        if (roadblock.isEnable()) {
+                            strRoad.append("|");
+                        } else {
+                            strRoad.append(" ");
+                        }
                     } else {
-                        strRoad.append(trafficlight.getGreenlightIcon());
-                    }
-                } else if ("roadblock".equals(facility.getName())) {
-                    Roadblock roadblock = (Roadblock) facility;
-                    if (roadblock.isEnable()) {
-                        strRoad.append("|");
-                    } else {
-                        strRoad.append(" ");
+                        strRoad.append(facilityMap.get(i).getIcon());
                     }
                 } else {
-                    strRoad.append(facilityMap.get(i).getIcon());
+                    strRoad.append(" ");
                 }
-            } else {
-                strRoad.append(" ");
-            }
-            if (carsLocMap.containsKey(i)) {
-                String icon = carsLocMap.get(i).getIcon();
-                strRoad.append(icon);
-            } else {
-                strRoad.append(" ");
+                if (carsLocMap.containsKey(i)) {
+                    String icon = carsLocMap.get(i).getIcon();
+                    strRoad.append(icon);
+                } else {
+                    strRoad.append(" ");
+                }
             }
         }
         laneLabel.setText(String.valueOf(strRoad));
