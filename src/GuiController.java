@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 /**
  * @author Laurence
- * @date 2019/10/5
+ * @date 2019/10/8
  */
 public class GuiController implements Initializable {
     @FXML
@@ -169,6 +169,7 @@ public class GuiController implements Initializable {
         roadLabelDown.setText(String.valueOf(strRoadLane));
 
         /* Roadblock and Traffic light */
+        /*
         StringBuilder strRoad = new StringBuilder();
         int interval = 5;
         for (int i = 0; i < interval; i++) {
@@ -203,20 +204,42 @@ public class GuiController implements Initializable {
             strRoad.append("\n");
         }
         facilityLabel.setText(String.valueOf(strRoad));
+        */
 
         /* Cars on the road */
         StringBuilder strCar = new StringBuilder();
-        for (
-                int i = 1;
-                i <= Gui.roadLength; i++) {
+        StringBuilder strRoad = new StringBuilder();
+        for (int i = 1; i <= Gui.roadLength; i++) {
+            if (facilityMap.containsKey(i)) {
+                RoadFacility facility = facilityMap.get(i);
+                if ("trafficlight".equals(facility.getName())) {
+                    Trafficlight trafficlight = (Trafficlight) facility;
+                    if (trafficlight.isEnable()) {
+                        strRoad.append(trafficlight.getRedlightIcon());
+                    } else {
+                        strRoad.append(trafficlight.getGreenlightIcon());
+                    }
+                } else if ("roadblock".equals(facility.getName())) {
+                    Roadblock roadblock = (Roadblock) facility;
+                    if (roadblock.isEnable()) {
+                        strRoad.append("|");
+                    } else {
+                        strRoad.append(" ");
+                    }
+                } else {
+                    strRoad.append(facilityMap.get(i).getIcon());
+                }
+            } else {
+                strRoad.append(" ");
+            }
             if (carsLocMap.containsKey(i)) {
                 String icon = carsLocMap.get(i).getIcon();
-                strCar.append(icon);
+                strRoad.append(icon);
             } else {
-                strCar.append(" ");
+                strRoad.append(" ");
             }
         }
-        laneLabel.setText(String.valueOf(strCar));
+        laneLabel.setText(String.valueOf(strRoad));
     }
 
     @SuppressWarnings("AlibabaMethodTooLong")

@@ -8,16 +8,17 @@ import java.util.ArrayList;
 
 /**
  * @author Laurence
+ * @date 2019/10/8
  */
 public class Gui extends Application {
     static int periodSecond = 1;
     static int periodThread = 200;
-    static int roadLength = 82;
+    static int roadLength = 60;
     static ArrayList<Car> cars = new ArrayList<>();
     static ArrayList<RoadFacility> roadFacilities = new ArrayList<>();
 
     public static void main(String[] args) {
-        int carNum = 1;
+        int carNum = 5;
         for (int i = 1; i <= carNum; i++) {
             Car car = new Car();
             if (i % 2 == 0) {
