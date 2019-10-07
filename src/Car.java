@@ -1,6 +1,8 @@
 /**
  * @author Laurence
+ * @date 2019/09/26
  */
+
 public class Car {
     private int distance;
     private int location;
