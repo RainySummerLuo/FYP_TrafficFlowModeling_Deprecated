@@ -14,21 +14,48 @@ public class Gui extends Application {
     static int periodSecond = 1;
     static int periodThread = 200;
     static int roadLength = 60;
-    static ArrayList<Car> cars = new ArrayList<>();
+    static ArrayList<ArrayList<Car>> carLanes = new ArrayList<>();
     static ArrayList<RoadFacility> roadFacilities = new ArrayList<>();
 
     public static void main(String[] args) {
-        int carNum = 5;
+        ArrayList<Car> carsLane1 = new ArrayList<>();
+        ArrayList<Car> carsLane2 = new ArrayList<>();
+
+        int carNum = 3;
+        /*
+        for (ArrayList<Car> carsLane : carLanes) {
+            for (int i = 1; i <= carNum; i++) {
+                Car car = new Car(i);
+                if (i % 2 == 0) {
+                    car.setIcon("●");
+                } else if (i % 2 == 1) {
+                    car.setIcon("○");
+                }
+                carsLane.add(car);
+            }
+            carLanes.add(carsLane);
+        }
+        */
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car();
+            Car car = new Car(i);
             if (i % 2 == 0) {
                 car.setIcon("●");
             } else if (i % 2 == 1) {
                 car.setIcon("○");
             }
-            car.setLocation(i);
-            cars.add(car);
+            carsLane1.add(car);
         }
+        for (int i = 1; i <= carNum; i++) {
+            Car car = new Car(i);
+            if (i % 2 == 0) {
+                car.setIcon("●");
+            } else if (i % 2 == 1) {
+                car.setIcon("○");
+            }
+            carsLane2.add(car);
+        }
+        carLanes.add(carsLane1);
+        carLanes.add(carsLane2);
 
         Roadblock roadblock = new Roadblock(10, "|", false);
         roadFacilities.add(roadblock);

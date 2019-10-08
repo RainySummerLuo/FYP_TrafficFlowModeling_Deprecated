@@ -5,10 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Laurence
@@ -32,9 +29,6 @@ public class GuiController implements Initializable {
 
     @FXML
     private Label infoLabel;
-
-    @FXML
-    private Label facilityLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -63,15 +57,31 @@ public class GuiController implements Initializable {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void slowDown() {
         // TODO: slowDown() Function
     }
 
     private void refresh() {
-        TreeMap<Integer, Car> carsLocMap = new TreeMap<>((o1, o2) -> o2 - o1);
-        for (Car car : Gui.cars) {
-            carsLocMap.put(car.getLocation(), car);
+        TreeMap<Integer, Car> carsLocMap1 = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, Car> carsLocMap2 = new TreeMap<>((o1, o2) -> o2 - o1);
+        // ArrayList<TreeMap<Integer, Car>> carMaps = new ArrayList<>();
+        /*
+        for (ArrayList<Car> carsLane: Gui.carLanes) {
+            for (Car car : carsLane) {
+                carsLocMap1.put(car.getLocation(), car);
+            }
         }
+        */
+        for (Car car : Gui.carLanes.get(0)) {
+            carsLocMap1.put(car.getLocation(), car);
+        }
+        for (Car car : Gui.carLanes.get(1)) {
+            carsLocMap2.put(car.getLocation(), car);
+        }
+        ArrayList<TreeMap<Integer, Car>> carMaps = new ArrayList<>();
+        carMaps.add(carsLocMap1);
+        carMaps.add(carsLocMap2);
 
         TreeMap<Integer, RoadFacility> facilityMap = new TreeMap<>((o1, o2) -> o2 - o1);
         for (RoadFacility facility : Gui.roadFacilities) {
@@ -85,12 +95,15 @@ public class GuiController implements Initializable {
             }
         }
 
-        carJudgement(carsLocMap, facilityMapEnable);
-        carMovement(carsLocMap);
-
-        monitor(carsLocMap);
-
-        guiRoadText(carsLocMap, facilityMap);
+        StringBuilder strRoad = new StringBuilder();
+        for (TreeMap<Integer, Car> carsMap : carMaps) {
+            carJudgement(carsMap, facilityMapEnable);
+            carMovement(carsMap);
+            monitor(carsMap);
+            strRoad.append(guiRoadText(carsMap, facilityMap));
+            strRoad.append("\n");
+        }
+        laneLabel.setText(String.valueOf(strRoad));
         guiInfoText();
     }
 
@@ -160,7 +173,7 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
+    private StringBuilder guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
         StringBuilder strRoadLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength - 1; i++) {
             strRoadLane.append("——");
@@ -168,46 +181,7 @@ public class GuiController implements Initializable {
         roadLabelUp.setText(String.valueOf(strRoadLane));
         roadLabelDown.setText(String.valueOf(strRoadLane));
 
-        /* Roadblock and Traffic light */
-        /*
-        StringBuilder strRoad = new StringBuilder();
-        int interval = 5;
-        for (int i = 0; i < interval; i++) {
-            for (int j = 1; j < Gui.roadLength + 1; j++) {
-                if (i < 4) {
-                    if (facilityMap.containsKey(j)) {
-                        RoadFacility facility = facilityMap.get(j);
-                        if ("trafficlight".equals(facility.getName())) {
-                            Trafficlight trafficlight = (Trafficlight) facility;
-                            if (trafficlight.isEnable()) {
-                                strRoad.append(trafficlight.getRedlightIcon());
-                            } else {
-                                strRoad.append(trafficlight.getGreenlightIcon());
-                            }
-                        } else if ("roadblock".equals(facility.getName())) {
-                            Roadblock roadblock = (Roadblock) facility;
-                            if (roadblock.isEnable()) {
-                                strRoad.append("|");
-                            } else {
-                                strRoad.append(" ");
-                            }
-                        } else {
-                            strRoad.append(facilityMap.get(j).getIcon());
-                        }
-                    } else {
-                        strRoad.append(" ");
-                    }
-                } else {
-                    strRoad.append(" ");
-                }
-            }
-            strRoad.append("\n");
-        }
-        facilityLabel.setText(String.valueOf(strRoad));
-        */
-
         /* Cars on the road */
-        StringBuilder strCar = new StringBuilder();
         StringBuilder strRoad = new StringBuilder();
         for (int i = 1; i <= Gui.roadLength; i++) {
             if (i == 1 || i == Gui.roadLength) {
@@ -243,7 +217,7 @@ public class GuiController implements Initializable {
                 }
             }
         }
-        laneLabel.setText(String.valueOf(strRoad));
+        return strRoad;
     }
 
     @SuppressWarnings("AlibabaMethodTooLong")
@@ -267,7 +241,7 @@ public class GuiController implements Initializable {
         }
         StringBuilder strInfo = new StringBuilder();
 
-        int time = Gui.cars.get(0).getTime();
+        int time = Gui.carLanes.get(0).get(0).getTime();
         strInfo.append("Time: ").append(time);
 
         assert monitor != null;
@@ -334,7 +308,7 @@ public class GuiController implements Initializable {
             Car car = entry.getValue();
             Monitor monitor = null;
             for (RoadFacility facility : Gui.roadFacilities) {
-                if (facility.getName().equalsIgnoreCase("monitor")) {
+                if ("monitor".equalsIgnoreCase(facility.getName())) {
                     monitor = (Monitor) facility;
                 }
             }
@@ -342,6 +316,7 @@ public class GuiController implements Initializable {
                 assert monitor != null;
                 if (car.getLocation() + i == monitor.getLocation()) {
                     monitor.setCarNum(monitor.getCarNum() + 1);
+                    return;
                 }
             }
         }

@@ -2,6 +2,7 @@ class Crosswalk extends RoadFacility {
     private int passPeriod;
     private int passTime;
 
+    @SuppressWarnings("SameParameterValue")
     Crosswalk(int location, String icon, int passPeriod) {
         super("crosswalk", location, icon, false);
         this.passPeriod = passPeriod;
