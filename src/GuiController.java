@@ -57,6 +57,7 @@ public class GuiController implements Initializable {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void slowDown() {
         // TODO: slowDown() Function
     }
@@ -307,7 +308,7 @@ public class GuiController implements Initializable {
             Car car = entry.getValue();
             Monitor monitor = null;
             for (RoadFacility facility : Gui.roadFacilities) {
-                if (facility.getName().equalsIgnoreCase("monitor")) {
+                if ("monitor".equalsIgnoreCase(facility.getName())) {
                     monitor = (Monitor) facility;
                 }
             }

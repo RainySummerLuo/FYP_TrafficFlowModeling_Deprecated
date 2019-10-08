@@ -3,7 +3,7 @@
  * @date 2019/09/26
  */
 
-public class Car {
+class Car {
     private int distance;
     private int location;
     private double speed;
@@ -40,10 +40,6 @@ public class Car {
 
     double getAcceleration() {
         return acceleration;
-    }
-
-    void setTime(int time) {
-        this.time += time;
     }
 
     String getIcon() {
@@ -85,5 +81,9 @@ public class Car {
 
     int getTime() {
         return time;
+    }
+
+    void setTime(int time) {
+        this.time += time;
     }
 }
