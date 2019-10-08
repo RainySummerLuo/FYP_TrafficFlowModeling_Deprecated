@@ -30,9 +30,6 @@ public class GuiController implements Initializable {
     @FXML
     private Label infoLabel;
 
-    // @FXML
-    // private Label facilityLabel;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //noinspection AlibabaAvoidManuallyCreateThread
@@ -102,7 +99,7 @@ public class GuiController implements Initializable {
             carJudgement(carsMap, facilityMapEnable);
             carMovement(carsMap);
             monitor(carsMap);
-            strRoad = guiRoadText(carsMap, facilityMap);
+            strRoad.append(guiRoadText(carsMap, facilityMap));
             strRoad.append("\n");
         }
         laneLabel.setText(String.valueOf(strRoad));
@@ -175,7 +172,8 @@ public class GuiController implements Initializable {
         }
     }
 
-    private StringBuilder guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap, StringB) {
+    private StringBuilder guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
+        StringBuilder strRoadLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength - 1; i++) {
             strRoadLane.append("——");
         }
@@ -317,6 +315,7 @@ public class GuiController implements Initializable {
                 assert monitor != null;
                 if (car.getLocation() + i == monitor.getLocation()) {
                     monitor.setCarNum(monitor.getCarNum() + 1);
+                    return;
                 }
             }
         }
