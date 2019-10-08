@@ -3,7 +3,7 @@ class Monitor extends RoadFacility {
 
     @SuppressWarnings("SameParameterValue")
     Monitor(int location, String icon) {
-        super("monitor", location, icon, true);
+        super("monitor", location, icon, false, 0);
         carNum = 0;
     }
 

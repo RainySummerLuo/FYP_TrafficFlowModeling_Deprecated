@@ -3,12 +3,14 @@ class RoadFacility {
     private int location;
     private String icon;
     private boolean enable;
+    private int laneIndex;
 
-    RoadFacility(String name, int location, String icon, boolean enable) {
+    RoadFacility(String name, int location, String icon, boolean enable, int laneIndex) {
         this.name = name;
         this.location = location;
         this.icon = icon;
         this.enable = enable;
+        this.laneIndex = laneIndex;
     }
 
     String getName() {
@@ -41,5 +43,13 @@ class RoadFacility {
 
     void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public int getLaneIndex() {
+        return laneIndex;
+    }
+
+    public void setLaneIndex(int laneIndex) {
+        this.laneIndex = laneIndex;
     }
 }

@@ -19,7 +19,7 @@ class Car {
         speed = 0;
         acceleration = 1;
         deceleration = -2;
-        time = 0;
+        time = 1;
     }
 
     int getDistance() {

@@ -8,7 +8,7 @@ class Trafficlight extends RoadFacility {
 
     @SuppressWarnings("SameParameterValue")
     Trafficlight(int location, int redlightPeriod, int greenlightPeriod, String redlightIcon, String greenlightIcon) {
-        super("trafficlight", location, "", false);
+        super("trafficlight", location, "", false, 0);
         this.redlightPeriod = redlightPeriod;
         this.greenlightPeriod = greenlightPeriod;
         this.redlightIcon = redlightIcon;

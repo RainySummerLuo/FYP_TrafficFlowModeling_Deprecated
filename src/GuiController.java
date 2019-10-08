@@ -30,6 +30,13 @@ public class GuiController implements Initializable {
     @FXML
     private Label infoLabel;
 
+    private boolean crosswalk1 = false;
+    private boolean crosswalk2 = false;
+    private boolean crosswalkNewP1 = false;
+    private boolean crosswalkNewP2 = false;
+
+    private StringBuilder strInfo;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //noinspection AlibabaAvoidManuallyCreateThread
@@ -83,31 +90,36 @@ public class GuiController implements Initializable {
         carMaps.add(carsLocMap1);
         carMaps.add(carsLocMap2);
 
-        TreeMap<Integer, RoadFacility> facilityMap = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, RoadFacility> facilityMap1 = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, RoadFacility> facilityMap2 = new TreeMap<>((o1, o2) -> o2 - o1);
         for (RoadFacility facility : Gui.roadFacilities) {
-            facilityMap.put(facility.getLocation(), facility);
-        }
-
-        TreeMap<Integer, RoadFacility> facilityMapEnable = new TreeMap<>((o1, o2) -> o2 - o1);
-        for (RoadFacility facility : Gui.roadFacilities) {
-            if (facility.isEnable() && !"monitor".equals(facility.getName())) {
-                facilityMapEnable.put(facility.getLocation(), facility);
+            if (facility.getLaneIndex() == 0) {
+                facilityMap1.put(facility.getLocation(), facility);
+                facilityMap2.put(facility.getLocation(), facility);
+            } else if (facility.getLaneIndex() == 1) {
+                facilityMap1.put(facility.getLocation(), facility);
+            } else if (facility.getLaneIndex() == 2) {
+                facilityMap2.put(facility.getLocation(), facility);
             }
         }
 
         StringBuilder strRoad = new StringBuilder();
+        strInfo = new StringBuilder();
+        int laneIndex = 1;
         for (TreeMap<Integer, Car> carsMap : carMaps) {
-            carJudgement(carsMap, facilityMapEnable);
+            carJudgement(carsMap, facilityMap1, facilityMap2, laneIndex);
             carMovement(carsMap);
             monitor(carsMap);
-            strRoad.append(guiRoadText(carsMap, facilityMap));
+            strRoad.append(guiRoadText(carsMap, facilityMap1, facilityMap2, laneIndex));
             strRoad.append("\n");
+            guiInfoText(facilityMap1, facilityMap2, laneIndex);
+            laneIndex++;
         }
         laneLabel.setText(String.valueOf(strRoad));
-        guiInfoText();
+        infoLabel.setText(String.valueOf(strInfo));
     }
 
-    private void carJudgement(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
+    private void carJudgement(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             int currDistance = entry.getKey();
             Car car = entry.getValue();
@@ -116,24 +128,45 @@ public class GuiController implements Initializable {
 
             car.setSlow(false);
 
+            TreeMap<Integer, RoadFacility> facilityMapAll;
+            if (laneIndex == 1) {
+                facilityMapAll = facilityMap1;
+            } else {
+                facilityMapAll = facilityMap2;
+            }
+            /*
+            TreeMap<Integer, RoadFacility> facilityMap = null;
+            for(Integer location : facilityMapAll.keySet()){
+                RoadFacility facility = facilityMapAll.get(location);
+                if (facility.isEnable()) {
+                    assert facilityMap != null;
+                    facilityMap.put(location, facility);
+                }
+            }
+            */
+
             int carTillEnd = Gui.roadLength - currDistance;
             if (carTillEnd < safeDistance + car.getSpeed()) {
                 for (int i = 1; i <= carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setSlow(true);
-                        break;
+                    } else if (facilityMapAll.containsKey(currDistance + i)) {
+                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                            car.setSlow(true);
+                            break;
+                        }
                     }
                 }
                 for (int i = 1; i <= safeDistance + car.getSpeed() - carTillEnd + 1; i++) {
                     if (carsLocMap.containsKey(i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setSlow(true);
-                        break;
+                    } else if (facilityMapAll.containsKey(currDistance + i)) {
+                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                            car.setSlow(true);
+                            break;
+                        }
                     }
                 }
             } else {
@@ -141,9 +174,11 @@ public class GuiController implements Initializable {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMap.containsKey(currDistance + i)) {
-                        car.setSlow(true);
-                        break;
+                    } else if (facilityMapAll.containsKey(currDistance + i)) {
+                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                            car.setSlow(true);
+                            break;
+                        }
                     }
                 }
             }
@@ -173,13 +208,20 @@ public class GuiController implements Initializable {
         }
     }
 
-    private StringBuilder guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap) {
+    private StringBuilder guiRoadText(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
         StringBuilder strRoadLane = new StringBuilder();
         for (int i = 0; i <= Gui.roadLength - 1; i++) {
             strRoadLane.append("——");
         }
         roadLabelUp.setText(String.valueOf(strRoadLane));
         roadLabelDown.setText(String.valueOf(strRoadLane));
+
+        TreeMap<Integer, RoadFacility> facilityMap;
+        if (laneIndex == 1) {
+            facilityMap = facilityMap1;
+        } else {
+            facilityMap = facilityMap2;
+        }
 
         /* Cars on the road */
         StringBuilder strRoad = new StringBuilder();
@@ -203,6 +245,13 @@ public class GuiController implements Initializable {
                         } else {
                             strRoad.append(" ");
                         }
+                    } else if ("crosswalk".equals(facility.getName())) {
+                        Crosswalk crosswalk = (Crosswalk) facility;
+                        if (crosswalk.isEnable()) {
+                            strRoad.append(crosswalk.getIcon());
+                        } else {
+                            strRoad.append("  ");
+                        }
                     } else {
                         strRoad.append(facilityMap.get(i).getIcon());
                     }
@@ -221,86 +270,123 @@ public class GuiController implements Initializable {
     }
 
     @SuppressWarnings("AlibabaMethodTooLong")
-    private void guiInfoText() {
+    private void guiInfoText(TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
         Monitor monitor = null;
         Trafficlight trafficlight = null;
         Crosswalk crosswalk = null;
-        for (RoadFacility facility : Gui.roadFacilities) {
-            switch (facility.getName()) {
-                case "monitor":
-                    monitor = (Monitor) facility;
-                    break;
-                case "trafficlight":
-                    trafficlight = (Trafficlight) facility;
-                    break;
-                case "crosswalk":
-                    crosswalk = (Crosswalk) facility;
-                    break;
-                default:
-            }
-        }
-        StringBuilder strInfo = new StringBuilder();
-
-        int time = Gui.carLanes.get(0).get(0).getTime();
-        strInfo.append("Time: ").append(time);
-
-        assert monitor != null;
-        int carNum = monitor.getCarNum();
-        strInfo.append(" | Count: ").append(String.format("%2s", carNum));
-        int density = (carNum / Gui.periodSecond * 3600) / time;
-        strInfo.append(" Flow: ").append(String.format("%3s", density)).append("veh/h");
-
-        String roadblock = null;
-
-        for (RoadFacility facility : Gui.roadFacilities) {
-            if ("roadblock".equals(facility.getName())) {
-                if (facility.isEnable()) {
-                    roadblock = " | Roadblock " + facility.getLocation();
-                } else {
-                    roadblock = " | Roadblock ✘";
+        if (laneIndex == 1) {
+            for (RoadFacility facility : facilityMap1.values()) {
+                switch (facility.getName()) {
+                    case "monitor":
+                        monitor = (Monitor) facility;
+                        break;
+                    case "trafficlight":
+                        trafficlight = (Trafficlight) facility;
+                        break;
+                    case "crosswalk":
+                        crosswalk = (Crosswalk) facility;
+                        break;
+                    default:
                 }
             }
-        }
+            int time = Gui.carLanes.get(0).get(0).getTime();
+            strInfo.append("Time: ").append(time);
 
-        String trafficlightStatus = "";
-        assert trafficlight != null;
-        if (trafficlight.isEnable()) {
-            trafficlightStatus = " | Red Light " + String.format("%2s", trafficlight.getGreenlight());
-            trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
-            if (trafficlight.getGreenlight() == 0) {
-                trafficlight.setRedlight(trafficlight.getRedlightPeriod());
-                trafficlight.setEnable(false);
-            }
-        } else if (!trafficlight.isEnable()) {
-            trafficlightStatus = " | Green Light " + String.format("%2s", trafficlight.getRedlight());
-            trafficlight.setRedlight(trafficlight.getRedlight() - 1);
-            if (trafficlight.getRedlight() == 0) {
-                trafficlight.setGreenlight(trafficlight.getGreenlightPeriod());
-                trafficlight.setEnable(true);
-            }
-        }
+            assert monitor != null;
+            int carNum = monitor.getCarNum();
+            strInfo.append(" | Count: ").append(String.format("%2s", carNum));
+            int density = (carNum / Gui.periodSecond * 3600) / time;
+            strInfo.append(" Flow: ").append(String.format("%3s", density)).append("veh/h");
 
-        String crosswalkStatus;
-        assert crosswalk != null;
-        Random ran = new Random();
-        int i = ran.nextInt(100);
-        int possibility = 5;
-        if (i <= possibility) {
-            crosswalk.newPedestrian();
-        }
-        if (crosswalk.isEnable()) {
-            crosswalkStatus = " | Crosswalk " + crosswalk.getPassTime();
-            if (crosswalk.getPassTime() == 0) {
-                crosswalk.setEnable(false);
+            String roadblock = null;
+
+            for (RoadFacility facility : Gui.roadFacilities) {
+                if ("roadblock".equals(facility.getName())) {
+                    if (facility.isEnable()) {
+                        roadblock = " | Roadblock " + facility.getLocation();
+                    } else {
+                        roadblock = " | Roadblock ✘";
+                    }
+                }
             }
-            crosswalk.setPassTime(crosswalk.getPassTime() - 1);
-        } else {
-            crosswalkStatus = " | Crosswalk ✘";
+
+            String trafficlightStatus = "";
+            assert trafficlight != null;
+            if (trafficlight.isEnable()) {
+                trafficlightStatus = " | Red Light " + String.format("%2s", trafficlight.getGreenlight());
+                trafficlight.setGreenlight(trafficlight.getGreenlight() - 1);
+                if (trafficlight.getGreenlight() == 0) {
+                    trafficlight.setRedlight(trafficlight.getRedlightPeriod());
+                    trafficlight.setEnable(false);
+                }
+            } else if (!trafficlight.isEnable()) {
+                trafficlightStatus = " | Green Light " + String.format("%2s", trafficlight.getRedlight());
+                trafficlight.setRedlight(trafficlight.getRedlight() - 1);
+                if (trafficlight.getRedlight() == 0) {
+                    trafficlight.setGreenlight(trafficlight.getGreenlightPeriod());
+                    trafficlight.setEnable(true);
+                }
+            }
+
+            String crosswalkStatus;
+            assert crosswalk != null;
+            Random ran = new Random();
+            int i = ran.nextInt(100);
+            int possibility = 5;
+            if (crosswalk1) {
+                crosswalk.newPedestrian();
+                crosswalk1 = false;
+                crosswalkNewP1 = false;
+            }
+            if (i <= possibility) {
+                crosswalk.newPedestrian();
+                crosswalkNewP1 = true;
+            }
+            if (crosswalk.isEnable()) {
+                crosswalkStatus = " | Crosswalk① " + crosswalk.getPassTime();
+                if (crosswalk.getPassTime() == 0) {
+                    crosswalk.setEnable(false);
+                    crosswalk2 = crosswalkNewP1;
+                }
+                crosswalk.setPassTime(crosswalk.getPassTime() - 1);
+            } else {
+                crosswalkStatus = " | Crosswalk① ✘";
+            }
+            strInfo.append(trafficlightStatus);
+            strInfo.append(roadblock);
+            strInfo.append(crosswalkStatus);
+        } else if (laneIndex == 2) {
+            for (RoadFacility facility : facilityMap2.values()) {
+                if ("crosswalk".equals(facility.getName())) {
+                    crosswalk = (Crosswalk) facility;
+                }
+            }
+            String crosswalkStatus;
+            assert false;
+            Random ran = new Random();
+            int i = ran.nextInt(100);
+            int possibility = 5;
+            if (crosswalk2) {
+                crosswalk.newPedestrian();
+                crosswalk2 = false;
+                crosswalkNewP2 = false;
+            }
+            if (i <= possibility) {
+                crosswalk.newPedestrian();
+                crosswalkNewP2 = true;
+            }
+            if (crosswalk.isEnable()) {
+                crosswalkStatus = " | Crosswalk② " + crosswalk.getPassTime();
+                if (crosswalk.getPassTime() == 0) {
+                    crosswalk.setEnable(false);
+                    crosswalk1 = crosswalkNewP2;
+                }
+                crosswalk.setPassTime(crosswalk.getPassTime() - 1);
+            } else {
+                crosswalkStatus = " | Crosswalk② ✘";
+            }
+            strInfo.append(crosswalkStatus);
         }
-        strInfo.append(crosswalkStatus);
-        strInfo.append(trafficlightStatus);
-        strInfo.append(roadblock);
-        infoLabel.setText(String.valueOf(strInfo));
     }
 
     private void monitor(TreeMap<Integer, Car> carsLocMap) {

@@ -62,9 +62,11 @@ public class Gui extends Application {
         Trafficlight trafficlight = new Trafficlight(50, 10, 10, "¤", "»");
         roadFacilities.add(trafficlight);
         Monitor monitoring = new Monitor(20, ":");
-        roadFacilities.add(monitoring);
-        Crosswalk crosswalk = new Crosswalk(30, "≣", 8);
-        roadFacilities.add(crosswalk);
+        roadFacilities.add(monitoring); //≣
+        Crosswalk crosswalk1 = new Crosswalk(30, "☃", 4, 1);
+        roadFacilities.add(crosswalk1);
+        Crosswalk crosswalk2 = new Crosswalk(30, "☃", 4, 2);
+        roadFacilities.add(crosswalk2);
         launch(args);
     }
 
