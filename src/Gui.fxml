@@ -22,22 +22,17 @@
             <children>
                 <Button fx:id="clearBtn" layoutX="449.0" layoutY="239.0" mnemonicParsing="false" onAction="#roadblock" prefHeight="31.0" prefWidth="128.0" text="Roadblock" />
                 <Button fx:id="slowBtn" disable="true" layoutX="842.0" layoutY="239.0" mnemonicParsing="false" onAction="#slowDown" prefHeight="31.0" prefWidth="80.0" text="Slower" />
-                <Label fx:id="laneLabel" layoutX="30.0" layoutY="95.0" prefHeight="23.0" prefWidth="1333.0" text="✈">
+                <Label fx:id="laneLabel" layoutX="18.0" layoutY="66.0" prefHeight="86.0" prefWidth="1333.0" text="✈">
                     <font>
                         <Font name="Consolas Bold" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="roadLabelUp" layoutX="19.0" layoutY="14.0" prefHeight="23.0" prefWidth="1333.0" text=" ====================================================================================">
+                <Label fx:id="roadLabelUp" layoutX="3.0" layoutY="14.0" prefHeight="23.0" prefWidth="1333.0" text=" ====================================================================================">
                     <font>
                         <Font name="Consolas" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="roadLabelDown" layoutX="19.0" layoutY="176.0" prefHeight="23.0" prefWidth="1333.0" text=" ====================================================================================">
-                    <font>
-                        <Font name="Consolas" size="20.0" />
-                    </font>
-                </Label>
-                <Label fx:id="facilityLabel" layoutX="19.0" layoutY="33.0" prefHeight="151.0" prefWidth="1333.0">
+                <Label fx:id="roadLabelDown" layoutX="3.0" layoutY="176.0" prefHeight="23.0" prefWidth="1333.0" text=" ====================================================================================">
                     <font>
                         <Font name="Consolas" size="20.0" />
                     </font>

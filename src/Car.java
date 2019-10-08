@@ -14,7 +14,8 @@ public class Car {
     private String icon;
     private boolean stop;
 
-    Car() {
+    Car(int distance) {
+        this.distance = distance;
         speed = 0;
         acceleration = 1;
         deceleration = -2;
@@ -39,10 +40,6 @@ public class Car {
 
     double getAcceleration() {
         return acceleration;
-    }
-
-    int getTime() {
-        return time;
     }
 
     void setTime(int time) {
@@ -84,5 +81,9 @@ public class Car {
 
     void setA(double a) {
         this.a = a;
+    }
+
+    int getTime() {
+        return time;
     }
 }
