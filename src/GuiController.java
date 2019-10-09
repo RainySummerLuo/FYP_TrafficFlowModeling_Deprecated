@@ -107,8 +107,11 @@ public class GuiController implements Initializable {
         strInfo = new StringBuilder();
         int laneIndex = 1;
         for (TreeMap<Integer, Car> carsMap : carMaps) {
+            laneChanging(carsMap, facilityMap1, facilityMap2, laneIndex);
             carJudgement(carsMap, facilityMap1, facilityMap2, laneIndex);
-            carMovement(carsMap);
+        }
+        carMovement(carMaps);
+        for (TreeMap<Integer, Car> carsMap : carMaps) {
             monitor(carsMap);
             strRoad.append(guiRoadText(carsMap, facilityMap1, facilityMap2, laneIndex));
             strRoad.append("\n");
@@ -217,6 +220,43 @@ public class GuiController implements Initializable {
                     }
                 }
             }
+            int carTillEnd = Gui.roadLength - location;
+            if (carTillEnd < safeDistance + car.getSpeed()) {
+                for (int i = 1; i <= carTillEnd + 1; i++) {
+                    if (carsLocMap.containsKey(location + i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(location + i)) {
+                        if (facilityMap.get(location + i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+                for (int i = 1; i <= safeDistance + car.getSpeed() - carTillEnd + 1; i++) {
+                    if (carsLocMap.containsKey(i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(location + i)) {
+                        if (facilityMap.get(location + i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                for (int i = 1; i <= safeDistance + car.getSpeed() + 1; i++) {
+                    if (carsLocMap.containsKey(location + i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(location + i)) {
+                        if (facilityMap.get(location + i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -293,8 +333,10 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
-        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+    private void carMovement(ArrayList<TreeMap<Integer, Car>> carMaps) {
+        TreeMap<Integer, Car> carsLocMap1 = carMaps.get(0);
+        TreeMap<Integer, Car> carsLocMap2 = carMaps.get(1);
+        for (Map.Entry<Integer, Car> entry : carsLocMap1.entrySet()) {
             Car car = entry.getValue();
             /* Car's Advancement */
             double speed = car.getSpeed() + car.getA();
@@ -306,6 +348,29 @@ public class GuiController implements Initializable {
             car.setTime(time);
             car.setDistance((int) Math.floor(speed * time));
             car.setLocation(car.getDistance() % Gui.roadLength);
+            if (car.isChangeLane()) {
+                car.setChangeLane(false);
+                carsLocMap2.put(entry.getKey(), entry.getValue());
+                carsLocMap1.remove(entry.getKey());
+            }
+        }
+        for (Map.Entry<Integer, Car> entry : carsLocMap2.entrySet()) {
+            Car car = entry.getValue();
+            /* Car's Advancement */
+            double speed = car.getSpeed() + car.getA();
+            if (speed < 0) {
+                speed = 0;
+            }
+            car.setSpeed(speed);
+            int time = Gui.periodSecond;
+            car.setTime(time);
+            car.setDistance((int) Math.floor(speed * time));
+            car.setLocation(car.getDistance() % Gui.roadLength);
+            if (car.isChangeLane()) {
+                car.setChangeLane(false);
+                carsLocMap1.put(entry.getKey(), entry.getValue());
+                carsLocMap2.remove(entry.getKey());
+            }
         }
     }
 
