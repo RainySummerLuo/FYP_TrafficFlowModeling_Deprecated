@@ -119,6 +119,107 @@ public class GuiController implements Initializable {
         infoLabel.setText(String.valueOf(strInfo));
     }
 
+    private void laneChanging(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            int location = entry.getKey();
+            Car car = entry.getValue();
+
+            int safeDistance = Road.safeDistance;
+
+            int threshold = 50;
+            Random ran = new Random();
+            int ranNum = ran.nextInt(100);
+            if (ranNum > threshold) {
+                return;
+            }
+
+            int carBeforeLoc = 0, carAfterLoc = 0;
+
+            car.setChangeLane(true);
+
+            TreeMap<Integer, RoadFacility> facilityMap;
+            if (laneIndex == 1) {
+                facilityMap = facilityMap2;
+            } else {
+                facilityMap = facilityMap1;
+            }
+
+            for (int i = 1; i < location; i++) {
+                if (carsLocMap.containsKey(location - i)) {
+                    carBeforeLoc = location - i;
+                    break;
+                }
+            }
+
+            if (carBeforeLoc == 0) {
+                for (int i = 0; i < Gui.roadLength - location; i++) {
+                    if (carsLocMap.containsKey(Gui.roadLength - i)) {
+                        carBeforeLoc = Gui.roadLength - i;
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 1; i <= Gui.roadLength - location; i++) {
+                if (carsLocMap.containsKey(i)) {
+                    carAfterLoc = i;
+                    break;
+                }
+            }
+
+            if (carAfterLoc == 0) {
+                for (int i = 1; i < location; i++) {
+                    if (carsLocMap.containsKey(i)) {
+                        carAfterLoc = i;
+                        break;
+                    }
+                }
+            }
+
+            if (carAfterLoc - location < Road.safeDistance) {
+                return;
+            }
+
+            int carFromStart = safeDistance - Road.maxSpeed - location;
+            if (carFromStart > 0) {
+                for (int i = 1; i < location; i++) {
+                    if (carsLocMap.containsKey(i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(i)) {
+                        if (facilityMap.get(i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+                for (int i = Gui.roadLength; i >= safeDistance + Road.maxSpeed - location; i--) {
+                    if (carsLocMap.containsKey(i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(i)) {
+                        if (facilityMap.get(i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                for (int i = 1; i < location; i++) {
+                    if (carsLocMap.containsKey(i)) {
+                        car.setChangeLane(false);
+                        break;
+                    } else if (facilityMap.containsKey(i)) {
+                        if (facilityMap.get(i).isEnable()) {
+                            car.setChangeLane(false);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void carJudgement(TreeMap<Integer, Car> carsLocMap, TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
         for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
             int currDistance = entry.getKey();
@@ -128,16 +229,16 @@ public class GuiController implements Initializable {
 
             car.setSlow(false);
 
-            TreeMap<Integer, RoadFacility> facilityMapAll;
+            TreeMap<Integer, RoadFacility> facilityMap;
             if (laneIndex == 1) {
-                facilityMapAll = facilityMap1;
+                facilityMap = facilityMap1;
             } else {
-                facilityMapAll = facilityMap2;
+                facilityMap = facilityMap2;
             }
             /*
             TreeMap<Integer, RoadFacility> facilityMap = null;
-            for(Integer location : facilityMapAll.keySet()){
-                RoadFacility facility = facilityMapAll.get(location);
+            for(Integer location : facilityMap.keySet()){
+                RoadFacility facility = facilityMap.get(location);
                 if (facility.isEnable()) {
                     assert facilityMap != null;
                     facilityMap.put(location, facility);
@@ -151,8 +252,8 @@ public class GuiController implements Initializable {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMapAll.containsKey(currDistance + i)) {
-                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
+                        if (facilityMap.get(currDistance + i).isEnable()) {
                             car.setSlow(true);
                             break;
                         }
@@ -162,8 +263,8 @@ public class GuiController implements Initializable {
                     if (carsLocMap.containsKey(i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMapAll.containsKey(currDistance + i)) {
-                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
+                        if (facilityMap.get(currDistance + i).isEnable()) {
                             car.setSlow(true);
                             break;
                         }
@@ -174,15 +275,15 @@ public class GuiController implements Initializable {
                     if (carsLocMap.containsKey(currDistance + i)) {
                         car.setSlow(true);
                         break;
-                    } else if (facilityMapAll.containsKey(currDistance + i)) {
-                        if (facilityMapAll.get(currDistance + i).isEnable()) {
+                    } else if (facilityMap.containsKey(currDistance + i)) {
+                        if (facilityMap.get(currDistance + i).isEnable()) {
                             car.setSlow(true);
                             break;
                         }
                     }
                 }
             }
-            if (car.isStop()) {
+            if (car.isSlow()) {
                 car.setA(car.getDeceleration());
             } else if (car.getSpeed() < Road.maxSpeed) {
                 car.setA(car.getAcceleration());

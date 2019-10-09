@@ -12,10 +12,12 @@ class Car {
     private double a;
     private int time;
     private String icon;
-    private boolean stop;
+    private boolean slow;
+    private boolean changeLane;
 
     Car(int distance) {
         this.distance = distance;
+        this.changeLane = false;
         speed = 0;
         acceleration = 1;
         deceleration = -2;
@@ -65,12 +67,12 @@ class Car {
         distance = location;
     }
 
-    boolean isStop() {
-        return stop;
+    boolean isSlow() {
+        return slow;
     }
 
     void setSlow(boolean stop) {
-        this.stop = stop;
+        this.slow = stop;
     }
 
     double getDeceleration() {
@@ -91,5 +93,13 @@ class Car {
 
     void setTime(int time) {
         this.time += time;
+    }
+
+    public boolean isChangeLane() {
+        return changeLane;
+    }
+
+    public void setChangeLane(boolean changeLane) {
+        this.changeLane = changeLane;
     }
 }
