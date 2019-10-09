@@ -189,6 +189,7 @@ public class GuiController implements Initializable {
             } else {
                 car.setA(0);
             }
+
         }
     }
 
