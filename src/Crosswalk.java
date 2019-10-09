@@ -3,8 +3,8 @@ class Crosswalk extends RoadFacility {
     private int passTime;
 
     @SuppressWarnings("SameParameterValue")
-    Crosswalk(int location, String icon, int passPeriod, int laneIndex) {
-        super("crosswalk", location, icon, false, laneIndex);
+    Crosswalk(int location, int passPeriod, int laneIndex) {
+        super("crosswalk", location, "", false, laneIndex);
         this.passPeriod = passPeriod;
         passTime = 0;
     }
