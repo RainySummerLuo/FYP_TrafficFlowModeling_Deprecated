@@ -38,20 +38,10 @@ public class Gui extends Application {
         */
         for (int i = 1; i <= carNum; i++) {
             Car car = new Car(i);
-            if (i % 2 == 0) {
-                car.setIcon("●");
-            } else if (i % 2 == 1) {
-                car.setIcon("○");
-            }
             carsLane1.add(car);
         }
         for (int i = 1; i <= carNum; i++) {
             Car car = new Car(i);
-            if (i % 2 == 0) {
-                car.setIcon("●");
-            } else if (i % 2 == 1) {
-                car.setIcon("○");
-            }
             carsLane2.add(car);
         }
         carLanes.add(carsLane1);
@@ -62,8 +52,8 @@ public class Gui extends Application {
         Trafficlight trafficlight = new Trafficlight(50, 10, 10, "¤", "»");
         roadFacilities.add(trafficlight);
         Monitor monitoring = new Monitor(20, ":");
-        roadFacilities.add(monitoring); //≣
-        Crosswalk crosswalk1 = new Crosswalk(30, "☃", 4, 1);
+        roadFacilities.add(monitoring); //≣♿
+        Crosswalk crosswalk1 = new Crosswalk(30, "♿", 4, 1);
         roadFacilities.add(crosswalk1);
         Crosswalk crosswalk2 = new Crosswalk(30, "☃", 4, 2);
         roadFacilities.add(crosswalk2);

@@ -251,7 +251,7 @@ public class GuiController implements Initializable {
                         if (crosswalk.isEnable()) {
                             strRoad.append(crosswalk.getIcon());
                         } else {
-                            strRoad.append("  ");
+                            strRoad.append(" ");
                         }
                     } else {
                         strRoad.append(facilityMap.get(i).getIcon());
@@ -270,7 +270,7 @@ public class GuiController implements Initializable {
         return strRoad;
     }
 
-    @SuppressWarnings("AlibabaMethodTooLong")
+    @SuppressWarnings({"AlibabaMethodTooLong", "DuplicatedCode"})
     private void guiInfoText(TreeMap<Integer, RoadFacility> facilityMap1, TreeMap<Integer, RoadFacility> facilityMap2, int laneIndex) {
         Monitor monitor = null;
         Trafficlight trafficlight = null;
@@ -338,10 +338,12 @@ public class GuiController implements Initializable {
                 crosswalk.newPedestrian();
                 crosswalk1 = false;
                 crosswalkNewP1 = false;
+                crosswalk.setIcon("⇑");
             }
             if (i <= possibility) {
                 crosswalk.newPedestrian();
                 crosswalkNewP1 = true;
+                crosswalk.setIcon("⇓");
             }
             if (crosswalk.isEnable()) {
                 crosswalkStatus = " | Crosswalk① " + crosswalk.getPassTime();
@@ -371,10 +373,12 @@ public class GuiController implements Initializable {
                 crosswalk.newPedestrian();
                 crosswalk2 = false;
                 crosswalkNewP2 = false;
+                crosswalk.setIcon("⇓");
             }
             if (i <= possibility) {
                 crosswalk.newPedestrian();
                 crosswalkNewP2 = true;
+                crosswalk.setIcon("⇑");
             }
             if (crosswalk.isEnable()) {
                 crosswalkStatus = " | Crosswalk② " + crosswalk.getPassTime();

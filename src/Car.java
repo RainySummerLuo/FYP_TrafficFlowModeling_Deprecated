@@ -20,6 +20,12 @@ class Car {
         acceleration = 1;
         deceleration = -2;
         time = 1;
+        icon = "→";
+    }
+
+    Car(int distance, String icon) {
+        this(distance);
+        this.icon = icon;
     }
 
     int getDistance() {
