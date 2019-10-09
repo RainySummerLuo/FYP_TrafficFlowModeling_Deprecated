@@ -129,13 +129,6 @@ public class GuiController implements Initializable {
 
             int safeDistance = Road.safeDistance;
 
-            int threshold = 50;
-            Random ran = new Random();
-            int ranNum = ran.nextInt(100);
-            if (ranNum > threshold) {
-                return;
-            }
-
             int carBeforeLoc = 0, carAfterLoc = 0;
 
             car.setChangeLane(true);
@@ -147,7 +140,7 @@ public class GuiController implements Initializable {
                 facilityMap = facilityMap1;
             }
 
-            for (int i = 1; i < location; i++) {
+            for (int i = 1; i <= location; i++) {
                 if (carsLocMap.containsKey(location - i)) {
                     carBeforeLoc = location - i;
                     break;
@@ -155,7 +148,7 @@ public class GuiController implements Initializable {
             }
 
             if (carBeforeLoc == 0) {
-                for (int i = 0; i < Gui.roadLength - location; i++) {
+                for (int i = 0; i <= Gui.roadLength - location; i++) {
                     if (carsLocMap.containsKey(Gui.roadLength - i)) {
                         carBeforeLoc = Gui.roadLength - i;
                         break;
@@ -171,7 +164,7 @@ public class GuiController implements Initializable {
             }
 
             if (carAfterLoc == 0) {
-                for (int i = 1; i < location; i++) {
+                for (int i = 1; i <= location; i++) {
                     if (carsLocMap.containsKey(i)) {
                         carAfterLoc = i;
                         break;
@@ -180,7 +173,7 @@ public class GuiController implements Initializable {
             }
 
             if (carAfterLoc - location < Road.safeDistance) {
-                return;
+                car.setChangeLane(false);
             }
 
             int carFromStart = safeDistance - Road.maxSpeed - location;
@@ -257,6 +250,12 @@ public class GuiController implements Initializable {
                     }
                 }
             }
+            /*int threshold = 80;
+            Random ran = new Random();
+            int ranNum = ran.nextInt(100);
+            if (ranNum < threshold) {
+                car.setChangeLane(false);
+            }*/
         }
     }
 
@@ -350,8 +349,8 @@ public class GuiController implements Initializable {
             car.setLocation(car.getDistance() % Gui.roadLength);
             if (car.isChangeLane()) {
                 car.setChangeLane(false);
-                carsLocMap2.put(entry.getKey(), entry.getValue());
-                carsLocMap1.remove(entry.getKey());
+                carsLocMap2.put(car.getLocation(), car);
+                carsLocMap1.remove(car.getLocation());
             }
         }
         for (Map.Entry<Integer, Car> entry : carsLocMap2.entrySet()) {
@@ -368,8 +367,8 @@ public class GuiController implements Initializable {
             car.setLocation(car.getDistance() % Gui.roadLength);
             if (car.isChangeLane()) {
                 car.setChangeLane(false);
-                carsLocMap1.put(entry.getKey(), entry.getValue());
-                carsLocMap2.remove(entry.getKey());
+                carsLocMap1.put(car.getLocation(), car);
+                carsLocMap2.remove(car.getLocation());
             }
         }
     }
