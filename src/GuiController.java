@@ -111,9 +111,10 @@ public class GuiController implements Initializable {
             carJudgement(carsMap, facilityMap1, facilityMap2, laneIndex);
             laneIndex++;
         }
+        carMaps = changeLane(carMaps);
         laneIndex = 1;
-        carMovement(carMaps);
         for (TreeMap<Integer, Car> carsMap : carMaps) {
+            carMovement(carsMap);
             monitor(carsMap);
             strRoad.append(guiRoadText(carsMap, facilityMap1, facilityMap2, laneIndex));
             strRoad.append("\n");
@@ -174,9 +175,11 @@ public class GuiController implements Initializable {
                 }
             }
 
+            /*
             if (carAfterLoc - location < Road.safeDistance) {
                 car.setChangeLane(false);
             }
+            */
 
             int carFromStart = safeDistance - Road.maxSpeed - location;
             if (carFromStart > 0) {
@@ -335,21 +338,11 @@ public class GuiController implements Initializable {
         }
     }
 
-    private void carMovement(ArrayList<TreeMap<Integer, Car>> carMaps) {
+    private ArrayList<TreeMap<Integer, Car>> changeLane(ArrayList<TreeMap<Integer, Car>> carMaps) {
         TreeMap<Integer, Car> carsLocMap1 = carMaps.get(0);
         TreeMap<Integer, Car> carsLocMap2 = carMaps.get(1);
         for (Map.Entry<Integer, Car> entry : carsLocMap1.entrySet()) {
             Car car = entry.getValue();
-            /* Car's Advancement */
-            double speed = car.getSpeed() + car.getA();
-            if (speed < 0) {
-                speed = 0;
-            }
-            car.setSpeed(speed);
-            int time = Gui.periodSecond;
-            car.setTime(time);
-            car.setDistance((int) Math.floor(speed * time));
-            car.setLocation(car.getDistance() % Gui.roadLength);
             if (car.isChangeLane()) {
                 car.setChangeLane(false);
                 carsLocMap2.put(car.getLocation(), car);
@@ -358,6 +351,21 @@ public class GuiController implements Initializable {
         }
         for (Map.Entry<Integer, Car> entry : carsLocMap2.entrySet()) {
             Car car = entry.getValue();
+            if (car.isChangeLane()) {
+                car.setChangeLane(false);
+                carsLocMap1.put(car.getLocation(), car);
+                carsLocMap2.remove(car.getLocation());
+            }
+        }
+        ArrayList<TreeMap<Integer, Car>> result = new ArrayList<>();
+        result.add(carsLocMap1);
+        result.add(carsLocMap2);
+        return result;
+    }
+
+    private void carMovement(TreeMap<Integer, Car> carsLocMap) {
+        for (Map.Entry<Integer, Car> entry : carsLocMap.entrySet()) {
+            Car car = entry.getValue();
             /* Car's Advancement */
             double speed = car.getSpeed() + car.getA();
             if (speed < 0) {
@@ -368,11 +376,6 @@ public class GuiController implements Initializable {
             car.setTime(time);
             car.setDistance((int) Math.floor(speed * time));
             car.setLocation(car.getDistance() % Gui.roadLength);
-            if (car.isChangeLane()) {
-                car.setChangeLane(false);
-                carsLocMap1.put(car.getLocation(), car);
-                carsLocMap2.remove(car.getLocation());
-            }
         }
     }
 
