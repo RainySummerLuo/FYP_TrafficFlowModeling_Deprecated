@@ -15,7 +15,7 @@ class Car {
     private boolean slow;
     private boolean changeLane;
 
-    Car(int distance) {
+    private Car(int distance) {
         this.distance = distance;
         this.changeLane = false;
         speed = 0;
@@ -95,11 +95,11 @@ class Car {
         this.time += time;
     }
 
-    public boolean isChangeLane() {
+    boolean isChangeLane() {
         return changeLane;
     }
 
-    public void setChangeLane(boolean changeLane) {
+    void setChangeLane(boolean changeLane) {
         this.changeLane = changeLane;
     }
 }

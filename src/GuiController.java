@@ -107,7 +107,7 @@ public class GuiController implements Initializable {
         strInfo = new StringBuilder();
         int laneIndex = 1;
         for (TreeMap<Integer, Car> carsMap : carMaps) {
-            laneChanging(carsMap, facilityMap1, facilityMap2, laneIndex);
+            //laneChanging(carsMap, facilityMap1, facilityMap2, laneIndex);
             carJudgement(carsMap, facilityMap1, facilityMap2, laneIndex);
             laneIndex++;
         }
