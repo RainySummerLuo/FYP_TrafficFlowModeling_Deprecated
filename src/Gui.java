@@ -37,11 +37,11 @@ public class Gui extends Application {
         }
         */
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car(i, String.valueOf(i));
+            Car car = new Car(i, "●");
             carsLane1.add(car);
         }
         for (int i = 1; i <= carNum; i++) {
-            Car car = new Car(i, String.valueOf(i));
+            Car car = new Car(i, "○");
             carsLane2.add(car);
         }
         carLanes.add(carsLane1);
